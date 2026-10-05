@@ -3,7 +3,9 @@ export class GameManager {
  constructor(save){this.save=save;this.state=save.load()||defaults();this.events=new Map();}
  on(event,cb){if(!this.events.has(event))this.events.set(event,new Set());this.events.get(event).add(cb);return ()=>this.events.get(event).delete(cb);}
  emit(event){this.events.get(event)?.forEach(cb=>cb(this.state));}
- persist(){this.save.save(this.state);this.emit('change');}
+ persist(){const saved=this.save.save(this.state);this.emit('change');return saved;}
+ getMinigameSave(id){return this.state.minigameSaves?.[`${id}:${this.state.playthrough}`]??null;}
+ saveMinigameProgress(id,snapshot){this.state.minigameSaves??={};this.state.minigameSaves[`${id}:${this.state.playthrough}`]=snapshot;return this.persist();}
  startNewGame(){const settings=this.state.settings;this.save.reset();this.state={...defaults(),settings};this.persist();}
  setFlag(k,v){this.state.flags[k]=v;this.persist();}
  go(scene,{resume=false}={}){if(!resume||this.state.scene!==scene)this.state.sceneProgress=null;this.state.scene=scene;this.persist();}
