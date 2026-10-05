@@ -22,7 +22,21 @@ npm run dev
 - Chapters 2–4 intentionally auto-complete after three seconds.
 - Red curtain transition, typewriter dialogue, optional dialogue choices, local saves with in-memory fallback, reset, audio settings, fullscreen.
 - BE repeats the second journey; NE/TE lead to credits. Endings are recorded locally.
-- Text marked `{TBD}` is draft placeholder copy. Title illustration is original SVG scenery. Audio API is intentionally silent.
+- Text marked `{TBD}` is draft placeholder copy. The title uses a warm illustrated room. Background music loops after the first click or keypress, follows the music volume setting, and continues across scenes using the same track. Sound effects remain placeholders.
+
+## Background music
+
+The supplied `mondamusic-game-game-music-529603(1).mp3` is stored as `public/assets/audio/bgm_default.mp3` and currently plays in all scenes.
+
+Edit `public/data/music.json` to assign music by scene. `default` is the fallback track; a `null` scene entry uses that default. Paths are relative to `public/` and work when hosted under a subdirectory, such as `/once-again/`.
+
+To add chapter music later, place the new MP3 in `public/assets/audio/`, then change the corresponding entry, for example:
+
+```json
+"ch1": "assets/audio/bgm_ch1_childhood.mp3"
+```
+
+The chapter's introduction, minigame and closing dialogue share the selected track. Both playthroughs use the same chapter entry. Switching to a different track starts it from the beginning; moving between scenes assigned the same track preserves playback position.
 
 ## Replace content
 

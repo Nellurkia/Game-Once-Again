@@ -1,0 +1,15 @@
+{
+  "default": "assets/audio/bgm_default.mp3",
+  "scenes": {
+    "title": null,
+    "prologue": null,
+    "ch1": null,
+    "ch2": null,
+    "ch3": null,
+    "ch4": null,
+    "interlude": null,
+    "ending_select": null,
+    "ending": null,
+    "credits": null
+  }
+}
