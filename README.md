@@ -2,6 +2,8 @@
 
 Phase 1 browser narrative game based on the supplied PRD. JavaScript, Phaser 3.90, Vite 5.4. No server or account required.
 
+For music, art, and copy requirements, see [`docs/ASSET_STORY_REQUIREMENTS.md`](docs/ASSET_STORY_REQUIREMENTS.md) and the [`story.json` copy template](docs/story.template.json).
+
 The page displays only the borderless game stage. All scenes share a 1280×720 coordinate space and scale proportionally to fit the viewport. Home, help, settings and fullscreen controls are inside the game; there is no surrounding navigation, chapter gallery or footer.
 
 ## Run
