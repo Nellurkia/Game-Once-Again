@@ -19,7 +19,8 @@ npm run dev
 
 - Title, prologue, four chapters, interlude, second journey, ending selection, ending and credits.
 - Chapter 1: arrows/WASD or on-screen buttons; collect five memories and reach the glowing room. Shadows reset your position, retaining collected memories. Second-run configuration changes target and removes shadow collisions.
-- Chapters 2–4 intentionally auto-complete after three seconds.
+- Chapter 2 is a playable top-down survival game: automatic targeting, moving enemy swarms, four hiding areas, solid projectile-blocking walls, three 22-second waves, three distinct random item selections (three choices from a nine-item pool), and a final boss with telegraphed ring projectiles and a targeted blast. Foliage hiding stops attacks, breaks targeting and heals, but uses limited breath and does not grant invulnerability. WASD/arrows move; hold Space in foliage to hide. Touch players can hold/drag on the arena to move and toggle hiding with the bottom-right button. Death offers a fresh run; defeating the boss unlocks the chapter's closing dialogue. Both journeys support this game. Leaving during combat restarts the run when continued.
+- Chapters 3–4 intentionally auto-complete after three seconds.
 - Red curtain transition, typewriter dialogue, optional dialogue choices, local saves with in-memory fallback, reset, audio settings, fullscreen.
 - BE repeats the second journey; NE/TE lead to credits. Endings are recorded locally.
 - Text marked `{TBD}` is draft placeholder copy. The title uses a warm illustrated room. Background music loops after the first click or keypress, follows the music volume setting, and continues across scenes using the same track. Sound effects remain placeholders.

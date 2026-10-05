@@ -1,7 +1,7 @@
 [
  {"id":"boot"},{"id":"title"},{"id":"prologue","title":"序章 · 暮色中的房间"},
  {"id":"ch1","title":"第一幕 · 童年","subtitle":"那条回家的路","age":"1986 · 童年","minigame":"pacman","asset":"ch1_bg","week1":{"goal":"return_room","ghostColor":"#c56e78","dialogueKey":"ch1_w1","label":"收集记忆碎片，回到自己的房间"},"week2":{"goal":"parents_room","powerPellet":true,"ghostColor":"#9ebbaa","dialogueKey":"ch1_w2","label":"这一次，走向父母的房间"}},
- {"id":"ch2","title":"第二幕 · 少年","subtitle":"没说出口的话","age":"1996 · 少年","minigame":"rhythm","asset":"ch2_bg","week1":{"dialogueKey":"ch2_w1","label":"跟上心跳的节奏"},"week2":{"dialogueKey":"ch2_w2","label":"停下来，听见自己的声音"}},
+ {"id":"ch2","title":"第二幕 · 少年","subtitle":"没说出口的话","age":"1996 · 少年","minigame":"survivors","week1":{"dialogueKey":"ch2_w1","label":"穿过夜庭的怪潮，在躲藏与反击间守住微光"},"week2":{"dialogueKey":"ch2_w2","label":"带着三件随身之物，直面长夜守望者"}},
  {"id":"ch3","title":"第三幕 · 青年","subtitle":"向前，还是向远方","age":"2006 · 青年","minigame":"runner","asset":"ch3_bg","week1":{"dialogueKey":"ch3_w1","label":"追上那个遥远的明天"},"week2":{"dialogueKey":"ch3_w2","label":"等等身边的人"}},
  {"id":"ch4","title":"第四幕 · 成年","subtitle":"拼不回的完整","age":"2026 · 成年","minigame":"puzzle","asset":"ch4_bg","week1":{"dialogueKey":"ch4_w1","label":"拼合生活的碎片"},"week2":{"dialogueKey":"ch4_w2","label":"允许生活留下空白"}},
  {"id":"interlude","title":"幕间 · 再一次的机会"},{"id":"ending_select","title":"终幕 · 你的选择"},{"id":"ending"},{"id":"credits"}
