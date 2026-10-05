@@ -1,0 +1,6 @@
+[
+ {"id":"ch1_bg","src":"assets/ch1_bg.svg","placeholder":true},
+ {"id":"ch2_bg","src":"assets/ch2_bg.svg","placeholder":true},
+ {"id":"ch3_bg","src":"assets/ch3_bg.svg","placeholder":true},
+ {"id":"ch4_bg","src":"assets/ch4_bg.svg","placeholder":true}
+]

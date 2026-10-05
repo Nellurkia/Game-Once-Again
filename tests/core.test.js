@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {GameSave} from '../src/core/GameSave.js';
+import {GameManager} from '../src/core/GameManager.js';
+function fixture(){let value=null;const storage={getItem:()=>value,setItem:(_,s)=>value=s,removeItem:()=>value=null};const save=new GameSave(storage);return {save,manager:new GameManager(save),storage};}
+test('both journeys reach endings and all three ending choices route correctly',()=>{const {manager:m}=fixture();m.startNewGame();m.go('ch1');for(let i=0;i<4;i++)m.advanceChapter();assert.equal(m.state.scene,'interlude');m.secondRun();for(let i=0;i<4;i++)m.advanceChapter();assert.equal(m.state.scene,'ending_select');m.ending('BE');assert.equal(m.state.scene,'ch1');assert.equal(m.state.playthrough,2);assert.equal(m.state.chapterIndex,0);m.ending('NE');assert.equal(m.state.scene,'ending');m.ending('TE');assert.deepEqual(m.state.unlockedEndings,['BE','NE','TE']);});
+test('save survives manager recreation and resets',()=>{const {save,manager:m}=fixture();m.startNewGame();m.advanceChapter();m.setFlag('saidFear',true);const restored=new GameManager(save);assert.equal(restored.state.chapterIndex,1);assert.equal(restored.state.flags.saidFear,true);save.reset();assert.equal(save.load(),null);});
+test('unavailable storage uses memory and malformed save does not crash',()=>{const save=new GameSave({getItem(){throw Error();},setItem(){throw Error();},removeItem(){throw Error();}});const m=new GameManager(save);m.startNewGame();m.setFlag('test',true);assert.equal(save.load().flags.test,true);save.reset();assert.equal(save.load(),null);assert.equal(new GameSave({getItem:()=>'{oops'}).load(),null);});
+test('scene configs and story keys resolve for both journeys',()=>{const scenes=JSON.parse(readFileSync(new URL('../public/data/scenes.json',import.meta.url)));const story=JSON.parse(readFileSync(new URL('../public/data/story.json',import.meta.url)));assert.equal(scenes.length,11);for(const c of scenes.filter(c=>c.minigame))for(const week of ['week1','week2'])assert.ok(story[c[week].dialogueKey]?.length);});

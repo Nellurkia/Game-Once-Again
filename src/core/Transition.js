@@ -1,0 +1,1 @@
+export async function transition(title,action){const curtain=document.getElementById('curtain');curtain.querySelector('span').textContent=title;curtain.classList.add('closed');await new Promise(r=>setTimeout(r,450));action();await new Promise(r=>setTimeout(r,450));curtain.classList.remove('closed');}

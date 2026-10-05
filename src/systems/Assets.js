@@ -1,0 +1,1 @@
+export async function loadData(){const entries=await Promise.all(['scenes','story','manifest'].map(async n=>{const r=await fetch(`${import.meta.env.BASE_URL}data/${n}.json`);if(!r.ok)throw new Error(`Unable to load ${n}`);return [n,await r.json()];}));return Object.fromEntries(entries);}
