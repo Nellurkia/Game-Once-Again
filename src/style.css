@@ -3,6 +3,7 @@
 /* The complete game uses one 1280 x 720 design coordinate space. */
 html,body,#app{width:100%;height:100%;margin:0;overflow:hidden;background:#111824}
 #app{position:fixed;inset:0}
+#app:fullscreen{width:100vw;height:100dvh;background:#111824}
 .game-frame{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform:translate(-50%,-50%) scale(var(--game-scale,1));transform-origin:center;border:0;border-radius:0;box-shadow:none;overflow:hidden;background:#202838}
 #screen{width:1280px;height:720px;aspect-ratio:16/9;min-height:0}
 #curtain{inset:0}
@@ -62,5 +63,9 @@ h1{font-size:84px}
 .table-action>.menu-kit-icon{width:30px;height:30px;flex:none;mix-blend-mode:multiply}
 .table-action>span{font-size:14px;letter-spacing:1px}
 .narrative-portrait{position:absolute;left:76px;bottom:224px;width:85px;height:168px;background:#fffdf7;border:5px solid #f2e5cc;border-radius:8px;box-shadow:0 3px 18px #09122166}
+#orientation-hint{display:none;position:fixed;z-index:100;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);max-width:calc(100vw - 24px);align-items:center;justify-content:center;gap:12px;padding:10px 15px;border:1px solid #c9ac7b88;border-radius:12px;background:#172033ed;color:#f0e3cf;box-shadow:0 8px 30px #0006;font-size:13px;text-align:center;backdrop-filter:blur(10px)}
+#orientation-retry{flex:none;padding:8px 11px;border:1px solid #cfb27e88;border-radius:7px;background:#39465b;color:#f3e5cc;font-size:12px}
+body.mobile-portrait #orientation-hint{display:flex}
+@media(max-width:480px) and (orientation:portrait){#orientation-hint{top:max(8px,env(safe-area-inset-top));gap:7px;padding:8px 10px;font-size:11px}#orientation-retry{padding:7px 8px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){.room-dust{animation:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
