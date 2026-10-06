@@ -17,7 +17,7 @@
   let state='COVER', context={}, variant, active=false, camera=0, cameraY=0, drag=null;
   let player, save, lastTime=0, accumulator=0, time=0, returnTimer=0;
   let interacted=false, queuedJump=false, hintUntil=0, toastTimer=0, captionZone=-1;
-  let idleSeconds=0, saveBlocked=false, corruptRaw=null, storedCandidate=null;
+  let idleSeconds=0, saveBlocked=false, storedCandidate=null;
   let modalReturn='PLAYING', disposed=false, writeSequence=0, hostPaused=false;
   const diagnostics={errors:[],lastSaveError:null};
 
@@ -52,7 +52,7 @@
     return JSON.parse(JSON.stringify(data));
   }
   function snapshot(){return JSON.parse(JSON.stringify(save));}
-  function reportSaveFailure(e){diagnostics.lastSaveError=String(e);$('save-status').textContent='暂未保存 · 可导出';$('save-status').classList.add('failed');}
+  function reportSaveFailure(e){diagnostics.lastSaveError=String(e);$('save-status').textContent='暂未保存 · 继续游玩时重试';$('save-status').classList.add('failed');}
   function persist(){
     if(!active)return;
     const data=snapshot(),seq=++writeSequence;
@@ -69,11 +69,11 @@
   function loadContext(input={},provided){
     context={slotId:'local',variantId:'first',...input};
     if(!L.variants[context.variantId])throw Error('未知的周目配置，请由总游戏传入 first 或 second');
-    variant=L.variants[context.variantId];saveBlocked=false;corruptRaw=null;storedCandidate=null;
+    variant=L.variants[context.variantId];saveBlocked=false;storedCandidate=null;
     try {
-      if(provided!==undefined&&provided!==null){corruptRaw=JSON.stringify(provided);storedCandidate=validateSave(provided);corruptRaw=null;}
+      if(provided!==undefined&&provided!==null){storedCandidate=validateSave(provided);}
       else if(!context.saveAdapter?.write){
-        const raw=localStorage.getItem(keyName());if(raw){corruptRaw=raw;storedCandidate=validateSave(JSON.parse(raw));corruptRaw=null;}
+        const raw=localStorage.getItem(keyName());if(raw)storedCandidate=validateSave(JSON.parse(raw));
       }
     }catch(e){saveBlocked=true;diagnostics.lastSaveError=String(e);}
     save=storedCandidate||newSave();spawn();active=false;setState('COVER');$('cover').hidden=false;
@@ -98,7 +98,7 @@
           : '<p>在残缺的记忆里走走，拾起碎片，把路接回原来的位置。</p><div class="control-grid"><span><kbd>A</kbd><kbd>D</kbd> / ← →</span><span>左右移动</span><span><kbd>Space</kbd></span><span>跳跃到平台上</span><span><kbd>E</kbd></span><span>操作信号灯、拾取钥匙与开门</span><span>鼠标左键</span><span>按住右侧碎片，直接拖入场景缺口</span></div><p>掉下去会回到安全位置，已找到的碎片仍在。碎片碰到即拾取；新碎片会出现在刚拼好的房间或楼梯里。先接回楼梯，再登高寻找下一块。按 M 查看地图。</p>',
         [{label:'开始走走 →',action:()=>{closeModal();save.tutorialFlags.entered=true;persist();hint('先碰到脚边的碎片，拖回断开的楼梯，再跳上台阶寻找新碎片。',12);}}]);
     }else hint('记忆接着上次的位置，慢慢走就好。',4);
-    if(saveBlocked)toast('原存档未能读取，已保留原数据。可从帮助中导出或重置。',6000);
+    if(saveBlocked)toast('原存档无法读取，已保留原数据。可从帮助中重置本关。',6000);
     canvas.focus({preventScroll:true});
   }
   function showModal(title,eyebrow,html,buttons){
@@ -114,19 +114,14 @@
       (touch
         ? '<p>亮着的碎片碰到即收集。按住下方左右键移动，点“跳跃”登上平台；出现提示后点“互动”。按住右侧碎片，拖近正确缺口后松开。</p>'
         : '<p>亮着的碎片碰到即收集。按 M 看地图；按 R 回到最近的安全点。新房间里可能藏着新碎片。</p><div class="control-grid"><span><kbd>A</kbd><kbd>D</kbd> / ← →</span><span>左右移动</span><span><kbd>Space</kbd></span><span>跳跃。上方的平台也能去。</span><span><kbd>E</kbd></span><span>操作附近信号灯、拾取钥匙，或打开终点门</span><span>鼠标拖动</span><span>观察碎片画面与缺口尺寸，拖近正确位置后松开</span><span><kbd>Esc</kbd> / <kbd>P</kbd></span><span>取消拖动，或暂停与继续</span><span><kbd>R</kbd></span><span>回到最近的安全位置，不清空进度</span></div>')+
-      '<h3>记忆会留下来</h3><p>拾取、拼接、拿钥匙与到达安全点时自动保存。刷新后选择“继续上次的回忆”。如果浏览器没有保存成功，可以导出存档随身保留。</p><p>错误位置不会吸附，碎片会回到右栏。拖动时世界会暂时静止。'+(variant.id==='second'?'这次需要把十四块记忆全部拼好；三枚照片碎片需要回访前面的区域。':'先接回通路，进入恢复的房间找新碎片。拼回车站站牌，按图案顺序操作三个信号灯。')+'</p>'+
-      (corruptRaw?'<p class="small-note">原存档暂时无法读取，已保留，当前不会覆盖它。请先导出或确认重置。</p>':''),
-      [{label:'继续回忆',action:closeModal},{label:'导出存档',light:true,action:exportSave},{label:'导入存档',light:true,action:()=>$('import-file').click()},{label:'重置本关',light:true,action:confirmReset}]);
+      '<h3>记忆会留下来</h3><p>拾取、拼接、拿钥匙与到达安全点时自动保存。刷新后选择“继续上次的回忆”。浏览器会自动保存进度。</p><p>错误位置不会吸附，碎片会回到右栏。拖动时世界会暂时静止。'+(variant.id==='second'?'这次需要把十四块记忆全部拼好；三枚照片碎片需要回访前面的区域。':'先接回通路，进入恢复的房间找新碎片。拼回车站站牌，按图案顺序操作三个信号灯。')+'</p>'+
+      (saveBlocked?'<p class="small-note">原存档暂时无法读取，已保留，重置本关前不会覆盖它。</p>':''),
+      [{label:'继续回忆',action:closeModal},{label:'重置本关',light:true,action:confirmReset}]);
   }
   function pause(){if(!active||state==='COMPLETED')return;if(drag){cancelDrag();return;}if(!$('modal').hidden){closeModal();return;}if(state==='DIALOGUE'){closeStory();return;}
     persist();showModal('歇一会儿','PAUSED','<p>回忆不会走远。已找到的碎片与拼好的道路都会留下。</p>',[{label:'继续回忆',action:closeModal},{label:'操作与存档',light:true,action:showHelp},{label:'回到标题',light:true,action:returnToTitle}]);}
   function returnToTitle(){persist();active=false;cancelDrag();clearInputs();setState('COVER');$('modal').hidden=true;$('story').hidden=true;$('cover').hidden=false;storedCandidate=snapshot();$('continue-button').hidden=false;}
-  function confirmReset(){showModal('重新整理这段回忆？','RESET THIS CHAPTER','<p>只清空本关当前配置的碎片、钥匙与进度，不会修改总游戏的周目。此操作无法撤销；也可以先导出存档。</p>',[{label:'取消',light:true,action:showHelp},{label:'导出存档',light:true,action:exportSave},{label:'确认重新开始',action:()=>{saveBlocked=false;corruptRaw=null;try{if(!context.saveAdapter?.write)localStorage.removeItem(keyName());}catch(e){reportSaveFailure(e);}closeModal();enter(false);}}]);}
-  function exportSave(){const raw=corruptRaw||JSON.stringify(snapshot(),null,2);const blob=new Blob([raw],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=corruptRaw?'memory-original-save.json':'memory-save.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('存档已导出，请保留这个 JSON 文件。');}
-  async function importSave(e){const file=e.target.files[0];e.target.value='';if(!file)return;
-    try{const validated=validateSave(JSON.parse(await file.text()));showModal('载入这份回忆？','IMPORT SAVE','<p>导入后将替换本关当前配置的进度。文件已经过完整性检查。</p>',[{label:'取消',light:true,action:showHelp},{label:'确认导入',action:()=>{save=validated;saveBlocked=false;corruptRaw=null;spawn();closeModal();updateUI();persist();if(save.completed)completionModal(false);toast('存档已载入。');}}]);}
-    catch(err){toast('未能导入：'+err.message,5000);}
-  }
+  function confirmReset(){showModal('重新整理这段回忆？','RESET THIS CHAPTER','<p>只清空本关当前配置的碎片、钥匙与进度，不会修改总游戏的周目。此操作无法撤销。</p>',[{label:'取消',light:true,action:showHelp},{label:'确认重新开始',action:()=>{saveBlocked=false;try{if(!context.saveAdapter?.write)localStorage.removeItem(keyName());}catch(e){reportSaveFailure(e);}closeModal();enter(false);}}]);}
 
   // Pixel scenery is drawn locally, without web requests or external libraries.
   function rect(x,y,w,h,color){ac.fillStyle=color;ac.fillRect(Math.round(x/4)*4,Math.round(y/4)*4,Math.ceil(w/4)*4,Math.ceil(h/4)*4);}
@@ -247,7 +242,7 @@
     clearInputs();setState('COMPLETED');const description=variant.id==='second'?'十四块拼图终于归位。这片记忆，第一次有了完整的轮廓。':'十一块通路已接回，仍有三处记忆残缺。带着这些留白，也可以继续向前。';
     showModal(variant.id==='second'?'这次，记忆完整了':'走到了回忆的尽头','CHAPTER COMPLETE',
       `<p>${description}</p><p>你拼好了 ${placedCount()} 块碎片，带着钥匙走完了这段路。</p><p class="small-note">本关已完成。后续剧情与周目由总游戏接管。</p>`,
-      [{label:context.onReturn?'继续故事':'回到标题',action:()=>{returnToTitle();if(typeof context.onReturn==='function')context.onReturn();}},{label:'导出这段回忆',light:true,action:exportSave}]);
+      [{label:context.onReturn?'继续故事':'回到标题',action:()=>{returnToTitle();if(typeof context.onReturn==='function')context.onReturn();}}]);
     modalReturn='COMPLETED';
     if(notify&&typeof context.onComplete==='function')context.onComplete({levelId:L.id,variantId:variant.id,completed:true,completeMemory:variant.id==='second',save:snapshot()});
   }
@@ -405,7 +400,7 @@
     else enter(false);
   };
   $('continue-button').onclick=()=>{save=storedCandidate;spawn();enter(true);};
-  $('map-button').onclick=showMap;$('help-button').onclick=showHelp;$('pause-button').onclick=pause;$('story-close').onclick=closeStory;$('import-file').onchange=importSave;
+  $('map-button').onclick=showMap;$('help-button').onclick=showHelp;$('pause-button').onclick=pause;$('story-close').onclick=closeStory;
   touchButtons.forEach(button=>{button.addEventListener('pointerdown',pressTouch);button.addEventListener('pointerup',releaseTouch);button.addEventListener('pointercancel',releaseTouch);button.addEventListener('lostpointercapture',releaseTouch);});
   document.addEventListener('click',event=>{const button=event.target.closest('[data-sfx]');if(button&&!button.disabled)playHostSfx(button.dataset.sfx);},true);
   $('game').addEventListener('click',advanceStoryPointer);
@@ -419,7 +414,7 @@
     getSaveData:snapshot,
     setHostPaused(value){hostPaused=!!value;clearInputs();cancelDrag();if(hostPaused)persist();},
     inspect(){return {state,variantId:variant.id,player:{...player},camera,cameraY,puzzleFlags:{...save.puzzleFlags},revealedPickupIds:availablePieces().filter(p=>ready(p)&&save.pieceStates[p.id]==='uncollected').map(p=>p.id),placed:placedCount(),inventory:availablePieces().filter(p=>save.pieceStates[p.id]==='inventory').map(p=>p.id),canComplete:canComplete(),diagnostics:{...diagnostics},transitions:[...transitions]};},
-    dispose(){persist();disposed=true;active=false;cancelDrag();clearInputs();clearTimeout(toastTimer);window.removeEventListener('keydown',onKeyDown);window.removeEventListener('keyup',onKeyUp);window.removeEventListener('pointermove',updateDrag);window.removeEventListener('pointerup',finishDrag);window.removeEventListener('pointercancel',cancelDrag);window.removeEventListener('blur',loseFocus);window.removeEventListener('resize',resize);window.visualViewport?.removeEventListener('resize',resize);document.removeEventListener('visibilitychange',onVisibility);window.removeEventListener('pagehide',onPageHide);$('game').removeEventListener('click',advanceStoryPointer);touchButtons.forEach(button=>{button.removeEventListener('pointerdown',pressTouch);button.removeEventListener('pointerup',releaseTouch);button.removeEventListener('pointercancel',releaseTouch);button.removeEventListener('lostpointercapture',releaseTouch);});for(const id of ['start-button','continue-button','help-button','map-button','pause-button','story-close'])$(id).onclick=null;$('import-file').onchange=null;}
+    dispose(){persist();disposed=true;active=false;cancelDrag();clearInputs();clearTimeout(toastTimer);window.removeEventListener('keydown',onKeyDown);window.removeEventListener('keyup',onKeyUp);window.removeEventListener('pointermove',updateDrag);window.removeEventListener('pointerup',finishDrag);window.removeEventListener('pointercancel',cancelDrag);window.removeEventListener('blur',loseFocus);window.removeEventListener('resize',resize);window.visualViewport?.removeEventListener('resize',resize);document.removeEventListener('visibilitychange',onVisibility);window.removeEventListener('pagehide',onPageHide);$('game').removeEventListener('click',advanceStoryPointer);touchButtons.forEach(button=>{button.removeEventListener('pointerdown',pressTouch);button.removeEventListener('pointerup',releaseTouch);button.removeEventListener('pointercancel',releaseTouch);button.removeEventListener('lostpointercapture',releaseTouch);});for(const id of ['start-button','continue-button','help-button','map-button','pause-button','story-close'])$(id).onclick=null;}
   };
   try{validateLevel();buildAtlas();loadContext(window.MEMORY_GAME_CONTEXT||{});resize();requestAnimationFrame(()=>{resize();requestAnimationFrame(frame);});}
   catch(e){diagnostics.errors.push(String(e));$('cover').hidden=true;showModal('这段记忆暂时打不开','LOAD ERROR',`<p>${e.message}</p><p>请检查配置与本地文件是否完整。</p>`,[]);console.error(e);}

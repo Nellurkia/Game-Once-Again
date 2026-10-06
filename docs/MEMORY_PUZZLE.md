@@ -20,11 +20,11 @@
 
 ## 存档与接入
 
-宿主通过 `mountMemoryPuzzle(parent, {context:{playthrough}, save, onProgress, onComplete})` 接入。`onProgress(snapshot)` 必须在实际持久化成功时返回 `true`，否则界面显示未保存并允许 JSON 导出。返回实例提供 `getSaveData()`、`move(direction)`、`destroy()`。
+宿主通过 `mountMemoryPuzzle(parent, {context:{playthrough}, save, onProgress, onComplete})` 接入。`onProgress(snapshot)` 必须在实际持久化成功时返回 `true`，否则界面显示未保存，并在后续操作时重试。返回实例提供 `getSaveData()`、`move(direction)`、`destroy()`。
 
 总存档 `zlyc_save_v1` 中，`minigameSaves['memoryPuzzle:1']` 与 `['memoryPuzzle:2']` 分开保存。快照包含 `schemaVersion`、`contentVersion`、`levelId`、`variantId`、`checkpointId`、`pieceStates`、`keyStates`、`storyFlags`、`tutorialFlags`、`completed`；不保存拖动中间状态或角色速度。
 
-拾取、拼合、取得钥匙、抵达安全点、暂停、离开与通关均保存。读档从安全点恢复并重建已拼道路。无效快照进入恢复界面，自动保存不会覆盖原记录；可导出原始备份、导入有效 JSON，或二次确认后重置本关当前周目。清除总存档会清除本关记录。
+拾取、拼合、取得钥匙、抵达安全点、暂停、离开与通关均保存。读档从安全点恢复并重建已拼道路。无效快照进入恢复界面，自动保存不会覆盖原记录；确认重置本关当前周目后可重新开始。清除总存档会清除本关记录。
 
 通关回调只在玩家选择继续时触发，返回 `success`、`score`、`levelId`、`variantId` 及 `memoryPuzzleComplete` / `memoryPuzzleFull` 标记，再由宿主进入第四章结尾对白。
 

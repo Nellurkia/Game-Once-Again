@@ -5,7 +5,7 @@ export class MemoryPuzzle {
  constructor({playthrough=1,save=null,onProgress=()=>false,config=CONFIG}={}){
   this.config=config;this.variant=config.variants[playthrough===2?'complete':'first'];this.onProgress=onProgress;
   const errors=validateLevel(config);if(errors.length)throw new Error(errors.join('; '));
-  this.rawSave=save;this.error=save===null?null:this.validateSave(save);
+  this.error=save===null?null:this.validateSave(save);
   this.status=this.error?'recovery':'playing';this.saveStatus='idle';this.message='A / D 移动，Space 跳跃；靠近闪光碎片时按 E。';this.messageTime=7;
   this.pieceStates=Object.fromEntries(this.variant.availablePieceIds.map(id=>[id,'uncollected']));
   this.checkpointId=config.checkpoints[0].id;this.keyStates={exitKey:false,doorOpened:false};this.storyFlags={};this.tutorialFlags={};this.completed=false;
@@ -25,7 +25,6 @@ export class MemoryPuzzle {
  restore(snapshot){
   const s=copy(snapshot);this.pieceStates=s.pieceStates;this.checkpointId=s.checkpointId;this.keyStates=s.keyStates;this.storyFlags=s.storyFlags;this.tutorialFlags=s.tutorialFlags;this.completed=s.completed;this.status=s.completed?'completed':'playing';this.error=null;this.resetPosition();
  }
- importSave(snapshot){const error=this.validateSave(snapshot);if(error){this.say(error);return false;}this.restore(snapshot);this.commit();this.say('已恢复存档，并回到安全位置。');return true;}
  snapshot(){return {schemaVersion:1,contentVersion:this.config.contentVersion,levelId:this.config.id,variantId:this.variant.id,checkpointId:this.checkpointId,pieceStates:{...this.pieceStates},keyStates:{...this.keyStates},storyFlags:{...this.storyFlags},tutorialFlags:{...this.tutorialFlags},completed:this.completed};}
  commit(){if(this.status==='recovery')return false;let saved=false;try{saved=this.onProgress(this.snapshot())===true;}catch{}this.saveStatus=saved?'saved':'memory';this.idle=0;return saved;}
  say(message,seconds=3){this.message=message;this.messageTime=seconds;}

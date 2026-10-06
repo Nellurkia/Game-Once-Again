@@ -47,10 +47,9 @@ test('incorrect drops preserve inventory; matching placement restores terrain an
 });
 test('save failures are reported and corrupt snapshots are not overwritten',()=>{
  let calls=0;const game=new MemoryPuzzle({save:{schemaVersion:999},onProgress:()=>{calls++;return true;}});
- assert.equal(game.status,'recovery');game.commit();tick(game,10);assert.equal(calls,0);assert.equal(game.rawSave.schemaVersion,999);
+ assert.equal(game.status,'recovery');assert.match(game.error,/存档格式或版本/);game.commit();tick(game,10);assert.equal(calls,0);
  const fresh=new MemoryPuzzle({onProgress:()=>{throw new Error('quota');}});fresh.commit();assert.equal(fresh.saveStatus,'memory');
- assert.equal(game.importSave(fresh.snapshot()),true);assert.equal(calls,1);
- assert.equal(game.importSave({...fresh.snapshot(),variantId:'complete'}),false);
+ assert.equal(game.validateSave(fresh.snapshot()),null);assert.equal(calls,0);
 });
 test('host keeps puzzle saves separate across journeys and reports storage failures',()=>{
  let raw=null;const save=new GameSave({getItem:()=>raw,setItem:(_,s)=>{raw=s;},removeItem:()=>{raw=null;}}),manager=new GameManager(save);

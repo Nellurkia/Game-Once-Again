@@ -80,11 +80,9 @@ export function mountMemoryPuzzle(parent,chapter={}){
    if(drag?.piece.id!==piece.id)picture(piece,rect.x,rect.y,scale);text(serial(piece),x+51,y+94,13,'#795b3e','center');
   });
   if(list.length>8){button(1044,599,89,30,'↑ 上翻',()=>{scroll=Math.max(0,scroll-1);});button(1156,599,89,30,'↓ 下翻',()=>{scroll++;});}
-  const label=model.saveStatus==='saved'?'已保存 · 从安全点继续':model.saveStatus==='memory'?'暂未保存 · 可在帮助中导出':'拾取、拼合后自动保存';text(label,1152,647,12,model.saveStatus==='memory'?'#ab633d':'#8b7153','center');
+  const label=model.saveStatus==='saved'?'已保存 · 从安全点继续':model.saveStatus==='memory'?'暂未保存 · 继续游玩时重试':'拾取、拼合后自动保存';text(label,1152,647,12,model.saveStatus==='memory'?'#ab633d':'#8b7153','center');
  }
  function complete(){if(notified||!model.completed)return;notified=true;chapter.onComplete?.({success:true,score:model.variant.completionPieceIds.length,flags:{memoryPuzzleComplete:true,memoryPuzzleFull:model.variant.id==='complete'},levelId:config.id,variantId:model.variant.id});}
- function exportSave(){const raw=model.status==='recovery'?model.rawSave:model.snapshot();const content=typeof raw==='string'?raw:JSON.stringify(raw,null,2);const url=URL.createObjectURL(new Blob([content],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`memory-puzzle-${model.variant.id}${model.status==='recovery'?'-backup':''}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
- function importSave(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{if(!input.files[0])return;try{const data=JSON.parse(await input.files[0].text());if(destroyed)return;if(model.importSave(data)){overlay=model.completed?'completed':null;scroll=0;notified=false;}}catch{if(!destroyed)model.say('导入文件无法解析，原进度已保留。',6);}};input.click();}
  function reset(){model=new MemoryPuzzle({...options,save:null});model.commit();overlay='intro';notified=false;scroll=0;}
  function resume(){overlay=null;clearInputs();canvas.focus();model.commit();}
  function modal(){
@@ -99,17 +97,17 @@ export function mountMemoryPuzzle(parent,chapter={}){
    paragraph('A / D、← / →：移动    Space：跳跃    E：拾取 / 开门\n拖动右栏切片，按相同编号匹配缺口；需先拼左侧道路。\nR：回安全点    H：帮助    P：暂停    Esc：取消拖动 / 返回\n掉落不损失碎片。拖放时冻结场景；刷新后从安全点恢复。',205,225,860,17);
    const missing=model.variant.completionPieceIds.filter(id=>model.pieceStates[id]!=='placed').map(id=>serial(config.pieces.find(p=>p.id===id)));
    paragraph((model.keyStates.exitKey?'已拿到钥匙。':'尚需找到出口钥匙。')+' 未拼合：'+(missing.join('、')||'无，可前往出口。'),205,371,855,16);
-   if(model.saveStatus==='memory')text('本次进度暂未保存到浏览器，请导出备份。',640,445,17,'#a86539','center');
-   button(235,493,220,46,'继续游玩',()=>{overlay=previousOverlay==='intro'?'intro':null;previousOverlay=null;clearInputs();});button(528,493,220,46,'导出存档',exportSave);button(821,493,220,46,'导入存档',importSave);
+   if(model.saveStatus==='memory')text('本次进度暂未保存到浏览器。',640,445,17,'#a86539','center');
+   button(420,493,440,46,'继续游玩',()=>{overlay=previousOverlay==='intro'?'intro':null;previousOverlay=null;clearInputs();});
   }else if(overlay==='recovery'){
-   text('这份记忆需要先妥善保留',640,178,28,'#715136','center');paragraph(model.error+'\n请先导出备份，再导入有效存档。也可以确认后只重置本关当前周目。',215,268,850,19);
-   button(235,460,220,48,'导出原始备份',exportSave);button(528,460,220,48,'导入存档',importSave);button(821,460,220,48,'重置本周目',()=>{overlay='confirm-reset';});
+   text('这份存档无法读取',640,178,28,'#715136','center');paragraph(model.error+'\n旧存档已保留。你可以取消并保留存档，或重置当前周目后重新开始。',215,268,850,19);
+   button(440,460,400,48,'重置本周目',()=>{overlay='confirm-reset';});
   }else if(overlay==='confirm-reset'){
-   text('重置本关当前周目的进度？',640,215,28,'#715136','center');text('原始备份仍可导出。其他章节和周目不会受影响。',640,296,18,'#86694d','center');button(350,425,240,50,'返回并保留存档',()=>{overlay='recovery';});button(690,425,240,50,'确认重置此关',reset);
+   text('重置本关当前周目的进度？',640,215,28,'#715136','center');text('其他章节和周目不会受影响。',640,296,18,'#86694d','center');button(350,425,240,50,'返回并保留存档',()=>{overlay='recovery';});button(690,425,240,50,'确认重置此关',reset);
   }else if(overlay==='completed'){
    text(model.variant.id==='complete'?'这段记忆，终于完整了':'带着留白，也能走向前方',640,208,32,'#715136','center');
    paragraph(model.variant.id==='complete'?'本关全部拼图已恢复，出口已经打开。':'本周目需要的道路已恢复，出口已经打开。仍有留白等待下一次回望。',260,304,760,19);
-   text(model.saveStatus==='memory'?'本次进度暂未保存，可先导出备份。':'本关完成，继续后回到总游戏剧情。',640,386,16,'#8b7050','center');button(350,464,310,52,notified?'已完成':'继续故事  /  空格',complete);button(710,464,200,52,'导出存档',exportSave);
+   text(model.saveStatus==='memory'?'本次进度暂未保存到浏览器。':'本关完成，继续后回到总游戏剧情。',640,386,16,'#8b7050','center');button(350,464,310,52,notified?'已完成':'继续故事  /  空格',complete);
   }
  }
  function draw(time){
