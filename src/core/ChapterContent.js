@@ -1,9 +1,13 @@
 import {storyNodeId,storySnapshot} from './StoryTree.js';
 
-export const CHAPTER_THREE_VERSION='youth-story-only-v3';
+export const CHAPTER_THREE_VERSION='station-runner-v4';
+export function chapterAfterGameKeys(chapter,playthrough,outcome){
+ const config=chapter[playthrough===1?'week1':'week2'];
+ return [...(playthrough!==1?chapter.postGameKeysByOutcome?.[outcome]||chapter.postGameKeysByOutcome?.met||[]:[]),...(config.postGameKeys||[])];
+}
 export function migrateChapterThree(state,scenes){
  if(state.chapterContentVersions?.ch3===CHAPTER_THREE_VERSION)return false;
- const chapter=scenes.find(scene=>scene.id==='ch3');if(!chapter||chapter.minigame)return false;
+ const chapter=scenes.find(scene=>scene.id==='ch3');if(!chapter)return false;
  const clean=snapshot=>{
   for(const key of Object.keys(snapshot.minigameSaves||{}))if(/^(beforeDeparture|quietNight):/.test(key))delete snapshot.minigameSaves[key];
   if(snapshot.flags)for(const key of ['youthOutcome','youthComplete','quietNightComplete','quietNightResponse'])delete snapshot.flags[key];
@@ -11,6 +15,8 @@ export function migrateChapterThree(state,scenes){
   const progress=snapshot.sceneProgress,key=chapter[snapshot.playthrough===1?'week1':'week2'].dialogueKey;
   if(progress?.kind==='game'||progress?.storyKey==='p2_departure_late')snapshot.sceneProgress={scene:'ch3',kind:'dialogue',storyKey:key,index:0};
   else if(['ch3_departure_w1','ch3_departure_w2'].includes(progress?.storyKey))snapshot.sceneProgress={...progress,storyKey:key};
+  // Existing on-time screenplay checkpoints retain their dialogue position and branch permission.
+  if(snapshot.playthrough===2&&snapshot.sceneProgress?.storyKey==='p2_07')snapshot.flags={...snapshot.flags,youthOutcome:'met',stationOutcome:'met'};
  };
  for(const playthrough of [1,2]){
   const tree=state.storyTrees?.[playthrough];if(!tree)continue;

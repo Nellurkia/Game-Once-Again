@@ -34,7 +34,7 @@ test('night garden tracks damage throughout a run, including damage that was lat
  run.player.invulnerable=0;run.hurt(999);assert.equal(run.mode,'lost');assert.equal(run.damageTaken,101);
 });
 
-test('removing chapter three preserves both story trees and converts former gameplay checkpoints to dialogue',()=>{
+test('replacing chapter three preserves both story trees and converts obsolete gameplay checkpoints to dialogue',()=>{
  for(const journey of [1,2]){
   const state={...defaults(),playthrough:journey,chapterIndex:2,scene:'ch3',sceneProgress:{scene:'ch3',kind:'game'},chapterContentVersions:{ch3:'before-departure-screenplay-v2'},storyTrees:{1:{nodes:{},lastNodeId:null},2:{nodes:{},lastNodeId:null}},minigameSaves:{['beforeDeparture:'+journey]:{location:'station'},['shiguang:'+journey]:{keep:true}},flags:{youthOutcome:'FAILED_LATE',firstJourneyComplete:true}};
   const tree=state.storyTrees[journey];tree.nodes['ch3:game']=storySnapshot(state);tree.lastNodeId='ch3:game';
@@ -44,7 +44,7 @@ test('removing chapter three preserves both story trees and converts former game
   assert.equal(tree.nodes['ch3:game'],undefined);assert.equal(tree.lastNodeId,`ch3:dialogue:${key}:0`);assert.ok(tree.nodes['ch2:game']);
   assert.equal(state.minigameSaves['beforeDeparture:'+journey],undefined);assert.deepEqual(state.minigameSaves['shiguang:'+journey],{keep:true});assert.equal(state.flags.youthOutcome,undefined);
   assert.equal(state.chapterContentVersions.ch3,CHAPTER_THREE_VERSION);assert.equal(migrateChapterThree(state,scenes),false);
-  const definitions=buildStoryTree(scenes,story,journey);assert.ok(definitions.groups.some(group=>group.id==='ch3'));assert.ok(!definitions.nodes.some(node=>node.id==='ch3:game'));
+  const definitions=buildStoryTree(scenes,story,journey);assert.ok(definitions.groups.some(group=>group.id==='ch3'));assert.ok(definitions.nodes.some(node=>node.id==='ch3:game'));assert.equal(tree.nodes['ch3:game'],undefined);
   const chapter=scenes.find(scene=>scene.id==='ch3');for(const post of chapter[journey===1?'week1':'week2'].postGameKeys)assert.ok(definitions.nodes.some(node=>node.id===`ch3:dialogue:${post}:0`));
  }
 });

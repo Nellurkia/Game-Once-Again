@@ -1,6 +1,6 @@
 # 插图替换记录
 
-来源：用户提供的 `插图.zip`（76 张）、一周目第二幕补充插图（6 张）及《替换图片.docx》（39 张）。新增文档插图以 `story-replace-01.webp` 至 `story-replace-39.webp` 放在 `public/assets/illustrations/`，由原图转为 WebP 后共约 3 MB。按对白行号在一、二周目分别接入；映射逻辑位于 `src/systems/Illustrations.js`。第三幕小游戏已移除，出租屋、门口、车站和青年人物素材继续用于剧本对白。
+来源：用户提供的 `插图.zip`（76 张）、一周目第二幕补充插图（6 张）及《替换图片.docx》（39 张）。新增文档插图以 `story-replace-01.webp` 至 `story-replace-39.webp` 放在 `public/assets/illustrations/`，由原图转为 WebP 后共约 3 MB。按对白行号在一、二周目分别接入；映射逻辑位于 `src/systems/Illustrations.js`。第三幕使用用户提供的《最后一班车》跑酷；出租屋、门口、车站和青年人物素材继续用于前后剧本对白。
 
 | 使用位置 | 原文件 |
 | --- | --- |

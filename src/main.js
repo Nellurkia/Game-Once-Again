@@ -2,6 +2,7 @@ import './style.css';
 import {GameSave} from './core/GameSave.js';
 import {GameManager} from './core/GameManager.js';
 import {AchievementStore} from './core/Achievements.js';
+import {chapterAfterGameKeys} from './core/ChapterContent.js';
 import {achievementHomeMarkup,achievementDialogMarkup,notifyAchievement} from './systems/AchievementView.js';
 import {transition} from './core/Transition.js';
 import {loadData} from './systems/Assets.js';
@@ -44,7 +45,7 @@ function modal(content){document.getElementById('modal').classList.remove('achie
 function closeModal(){document.getElementById('modal').close();}
 document.getElementById('close-modal').onclick=closeModal;
 document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeModal();};
-function about(){modal(`<span class="eyebrow">ABOUT THE JOURNEY</span><h2>如果人生，可以再来一次。</h2><p>暮年的你在旧游戏机中，重新走进那些未曾忘记的记忆。第一次学会逃避，第二次试着面对。</p><p>这是《再来一次》的第一阶段框架预览。童年数字勇者、少年夜庭生存战、老年回忆拼图均可游玩；第三幕青年时期直接进入剧情。剧情已按完整剧本接入；背景音乐与克制的菜单、选择和回忆完成音效已加入。</p><div class="modal-note">方向键 / WASD：移动<br>空格 / 点击：推进对话<br>所有进度只保存在当前浏览器。</div><p class="muted">主题：暮 · MoBiUs 2026 游戏开发挑战赛</p>`);}
+function about(){modal(`<span class="eyebrow">ABOUT THE JOURNEY</span><h2>如果人生，可以再来一次。</h2><p>暮年的你在旧游戏机中，重新走进那些未曾忘记的记忆。第一次学会逃避，第二次试着面对。</p><p>这是《再来一次》的第一阶段框架预览。童年数字勇者、少年夜庭生存战、青年最后一班车、老年回忆拼图均可游玩。剧情已按完整剧本接入；背景音乐与克制的菜单、选择和回忆完成音效已加入。</p><div class="modal-note">方向键 / WASD：移动<br>空格 / 点击：推进对话<br>所有进度只保存在当前浏览器。</div><p class="muted">主题：暮 · MoBiUs 2026 游戏开发挑战赛</p>`);}
 document.getElementById('about').onclick=about;
 function settings(){modal(`<span class="eyebrow">PREFERENCES</span><h2>给旅程一点留白。</h2><p>背景音乐与轻柔按键音可分别调节；按键音只在菜单、剧情选择和重要记忆完成时播放。</p><label class="range-label">背景音乐 <input id="bgm" type="range" min="0" max="1" step=".05" value="${manager.state.settings.bgmVolume}"></label><label class="range-label">按键音 <input id="sfx" type="range" min="0" max="1" step=".05" value="${manager.state.settings.sfxVolume}"></label><button class="secondary full" id="erase" data-sfx="select">清除本地存档</button><p class="muted">清除后将从序章重新开始。</p>`);for(const [id,key] of [['bgm','bgmVolume'],['sfx','sfxVolume']])document.getElementById(id).oninput=e=>{manager.state.settings[key]=Number(e.target.value);if(key==='bgmVolume')audio.setBgmVolume(manager.state.settings[key]);else audio.setSfxVolume(manager.state.settings[key]);if(save.load())manager.persist();};document.getElementById('erase').onclick=()=>{modal('<h2>清除这份存档？</h2><p>章节进度和已解锁结局将被移除。</p><button class="primary full" id="confirm-erase" data-sfx="confirm">确认清除</button>');document.getElementById('confirm-erase').onclick=()=>{manager.clearSavedGame();closeModal();render('title');};};}
 document.getElementById('settings').onclick=settings;
@@ -96,20 +97,20 @@ function chapter(id){
  const playGame=()=>{
   dialogue=null;
   manager.saveGameplayPosition();
-  screen.innerHTML=`<div class="play-scene ${c.minigame==='survivors'?'survivor-scene':['memoryPuzzle','shiguang','numberHero'].includes(c.minigame)?'memory-puzzle-scene':''}"><div class="play-header"><span>${c.title}</span><span>${manager.state.playthrough===2?'NEW GAME +':'FIRST JOURNEY'} <i> / </i> ${c.minigame==='numberHero'?'数字勇者':c.minigame==='survivors'?'夜庭幸存者':'章节预览'}</span></div><div id="phaser-host"></div><div class="dpad"><button data-dir="0,-1" aria-label="向上">↑</button><button data-dir="-1,0" aria-label="向左">←</button><button data-dir="0,1" aria-label="向下">↓</button><button data-dir="1,0" aria-label="向右">→</button></div></div>`;
-  const afterGame=()=>scriptSequence(config.postGameKeys||[],finishChapter);
+  screen.innerHTML=`<div class="play-scene ${c.minigame==='survivors'?'survivor-scene':['memoryPuzzle','shiguang','numberHero','stationRunner'].includes(c.minigame)?'memory-puzzle-scene':''}${c.minigame==='stationRunner'?' station-runner-scene':''}"><div class="play-header"><span>${c.title}</span><span>${manager.state.playthrough===2?'NEW GAME +':'FIRST JOURNEY'} <i> / </i> ${c.minigame==='numberHero'?'数字勇者':c.minigame==='survivors'?'夜庭幸存者':c.minigame==='stationRunner'?'最后一班车':'章节预览'}</span></div><div id="phaser-host"></div><div class="dpad"><button data-dir="0,-1" aria-label="向上">↑</button><button data-dir="-1,0" aria-label="向左">←</button><button data-dir="0,1" aria-label="向下">↓</button><button data-dir="1,0" aria-label="向右">→</button></div></div>`;
+  const afterGame=()=>scriptSequence(chapterAfterGameKeys(c,manager.state.playthrough,manager.state.flags.youthOutcome),finishChapter);
   const onComplete=result=>{
    if(result.success)audio.playSfx('memory');
    Object.entries(result.flags||{}).forEach(([k,v])=>manager.setFlag(k,v));
    setTimeout(()=>{if(!document.getElementById('phaser-host'))return;game?.destroy(true);game=null;afterGame();},100);
   };
   const playthrough=manager.state.playthrough;
-  game=mountGame('phaser-host',{config,minigame:c.minigame,asset:data.manifest.find(a=>a.id===c.asset),onComplete,onAchievement:achievementId=>{if(manager.state.scene===id&&manager.state.playthrough===playthrough)achievements.unlock(achievementId);},bridge,context:{playthrough,sfxVolume:manager.state.settings.sfxVolume},save:manager.getMinigameSave(c.minigame),onProgress:snapshot=>manager.state.scene===id&&manager.state.playthrough===playthrough?manager.saveMinigameProgress(c.minigame,snapshot):false});
+  game=mountGame('phaser-host',{config,minigame:c.minigame,asset:data.manifest.find(a=>a.id===c.asset),onComplete,onAchievement:achievementId=>{if(manager.state.scene===id&&manager.state.playthrough===playthrough)achievements.unlock(achievementId);},bridge,context:{playthrough,sfxVolume:manager.state.settings.sfxVolume,getSfxVolume:()=>manager.state.settings.sfxVolume},save:manager.getMinigameSave(c.minigame),onProgress:snapshot=>manager.state.scene===id&&manager.state.playthrough===playthrough?manager.saveMinigameProgress(c.minigame,snapshot):false});
   document.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>bridge.move?.(...b.dataset.dir.split(',').map(Number)));
  };
  if(progress?.kind==='game')playGame();
  else{
-  const postKeys=config.postGameKeys||[];
+  const postKeys=chapterAfterGameKeys(c,manager.state.playthrough,manager.state.flags.youthOutcome);
   const allDialogueKeys=[...introKeys,...postKeys];
   const savedKey=progress?.kind==='dialogue'?allDialogueKeys.indexOf(progress.storyKey):-1;
   if(savedKey>=introKeys.length&&savedKey>=0)scriptSequence(postKeys,finishChapter,savedKey-introKeys.length);

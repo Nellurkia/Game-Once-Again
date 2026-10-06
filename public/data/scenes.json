@@ -69,12 +69,12 @@
   {
     "id": "ch3",
     "title": "第三幕 · 青年",
-    "subtitle": "出发的那一天",
+    "subtitle": "最后一班车",
     "age": "青年 · 出发的那一天",
-    "minigame": null,
+    "minigame": "stationRunner",
     "week1": {
       "dialogueKey": "p1_06",
-      "label": "青年时期的故事",
+      "label": "穿过车站，走向那班记忆中的列车",
       "dialogueKeys": [
         "p1_06"
       ],
@@ -84,12 +84,11 @@
     },
     "week2": {
       "dialogueKey": "p2_06",
-      "label": "青年时期的故事",
+      "label": "提前出发，选择两条路线，使用道具争取赶上末班车",
       "dialogueKeys": [
         "p2_06"
       ],
       "postGameKeys": [
-        "p2_07",
         "p2_08",
         "p2_09",
         "p2_10",
@@ -97,6 +96,10 @@
         "p2_12",
         "p2_13"
       ]
+    },
+    "postGameKeysByOutcome": {
+      "met": ["p2_07"],
+      "missed": ["p2_station_missed"]
     }
   },
   {

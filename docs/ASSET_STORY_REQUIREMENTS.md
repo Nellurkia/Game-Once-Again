@@ -20,7 +20,7 @@
 | 建议必需 | 按钮确认、结局选择 | `public/assets/audio/sfx_ui_confirm.mp3`、`public/assets/audio/sfx_ending_select.mp3` | 2 | 短促清晰，避免刺耳。 |
 | 建议必需 | 对话推进、幕布转场 | `public/assets/audio/sfx_dialogue_next.mp3`、`public/assets/audio/sfx_transition.mp3` | 2 | 短音效；可分别用于点击反馈和红幕转场。 |
 | 第一阶段玩法 | 童年迷宫：收集碎片、撞到影子、抵达目标房间 | `public/assets/audio/sfx_memory_collect.mp3`、`public/assets/audio/sfx_ghost_hit.mp3`、`public/assets/audio/sfx_room_arrive.mp3` | 3 | 反馈差异清楚；重复触发时不突兀。 |
-| 第三幕剧情可选 | 脚步、开门、消息通知、站内广播、离站 | `public/assets/audio/sfx_ch3_step.mp3`、`public/assets/audio/sfx_ch3_door.mp3`、`public/assets/audio/sfx_ch3_message.mp3`、`public/assets/audio/amb_ch3_station.mp3`、`public/assets/audio/sfx_ch3_departure.mp3` | 5 | 小游戏已移除，此处仅供后续剧情演出使用；广播不写死城市、A 的身份或机会类型。 |
+| 第三幕剧情可选 | 脚步、开门、消息通知、站内广播、离站 | `public/assets/audio/sfx_ch3_step.mp3`、`public/assets/audio/sfx_ch3_door.mp3`、`public/assets/audio/sfx_ch3_message.mp3`、`public/assets/audio/amb_ch3_station.mp3`、`public/assets/audio/sfx_ch3_departure.mp3` | 5 | 跑酷使用克制的合成反馈，此处供后续剧情演出使用；广播不写死城市、A 的身份或机会类型。 |
 | 可选 | 老年房间环境底噪 | `public/assets/audio/amb_room_evening.mp3` | 1 | 轻微室内、窗外暮色氛围；不盖过对白，可关闭。 |
 
 **建议交付规范：**配乐 MP3、44.1 kHz、立体声；单曲约 1–3 分钟，提供可无缝循环版本或标记循环点。音效 MP3/OGG、44.1 kHz，短音效建议单声道。另交 WAV 母带可供后期混音。音乐、人声和音效分轨；文件不带版权不明的采样或歌词。统一小写蛇形命名，禁止空格与 `final_final2` 一类版本名。若需改名，同步修改音频 manifest。
@@ -34,7 +34,7 @@
 | 建议必需 | 标题页／序章黄昏房间主视觉 | `public/assets/title_room_twilight.png` | 1280×720，16:9；sRGB；需保留文字摆放安全区，文件无文字。 | 目前 SVG 场景写在 `src/ui/room.js`，manifest 中尚无此项；替换时需把插画移到资源文件，并将 `title_room` 加入清单、接入标题页与序章。 |
 | 必需替换 | 第一幕·童年背景 | `public/assets/ch1_bg.png` | 1280×720；走廊／儿童房氛围，无界面字、按钮和游戏目标标记。 | 清单 ID `ch1_bg` 当前指向 `assets/ch1_bg.svg`；改为 PNG 时同步把 `src` 改为 `assets/ch1_bg.png`。 |
 | 必需替换 | 第二幕·少年背景 | `public/assets/ch2_bg.png` | 1280×720；表现少年时期；为节奏玩法留出中间操作区。 | 将 `ch2_bg` 的 manifest `src` 改为 PNG 路径。 |
-| 已接入，可精修 | 第三幕·青年房间、门口、站台与会合插画 | `public/assets/illustrations/Y1-rental-night.png`、`Y4-door-hesitation.png`、`Y6-empty-platform.png`、`Y10-ng-running-corridor.png`、`Y11-ng-platform-reunion.png`、`Y12-ng-side-by-side.png` | 16:9；两周目的同一空间构图呼应，界面文字另行渲染。 | 由 `Illustrations.js` 接入青年剧情；第三幕小游戏已移除。 |
+| 已接入，可精修 | 第三幕·青年房间、门口、站台与会合插画 | `public/assets/illustrations/Y1-rental-night.png`、`Y4-door-hesitation.png`、`Y6-empty-platform.png`、`Y10-ng-running-corridor.png`、`Y11-ng-platform-reunion.png`、`Y12-ng-side-by-side.png` | 16:9；两周目的同一空间构图呼应，界面文字另行渲染。 | 由 `Illustrations.js` 接入青年剧情；第三幕跑酷独立绘制车站场景。 |
 | 必需替换 | 第四幕·成年背景 | `public/assets/ch4_bg.png` | 1280×720；表现关系、生活碎片与成年阶段；避免把必要提示烘焙进背景。 | 将 `ch4_bg` 的 manifest `src` 改为 PNG 路径。 |
 | 第一阶段玩法 | 童年迷宫墙体／地块图集 | `public/assets/ch1_maze_tiles.png` | 透明背景；每个地块同尺寸、网格对齐，附地块尺寸和 atlas 坐标。 | 当前墙、豆子、目标房间均由 Phaser 绘制；正式图集须接入 `pacman` renderer。 |
 | 第一阶段玩法 | 玩家与影子 sprite sheet | `public/assets/ch1_characters.png` | 透明背景；逐帧统一尺寸；附命名帧表／atlas JSON；方向与动画状态分组。 | 当前角色与影子是圆形代码占位；接入时将 sprite sheet 加到 ch1 资源清单。 |

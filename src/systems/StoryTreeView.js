@@ -41,13 +41,15 @@ export function mountStoryTree(element,{manager,scenes,story,onSelect,onClose}){
    const column=document.createElement('section');column.className='story-tree-group';
    const heading=document.createElement('h3');heading.textContent=group.title;
    const list=document.createElement('div');list.className='story-tree-node-list';
-   column.append(heading,list);group.nodes.forEach(node=>appendNode(list,node));
+   column.append(heading,list);group.nodes.filter(node=>!node.afterBranches).forEach(node=>appendNode(list,node));
    for(const branch of group.branches){
     const branchList=document.createElement('div');branchList.className='story-tree-node-list story-tree-visited-branch';
     const label=document.createElement('span');label.className='story-tree-branch-label';label.textContent=branch.label||branch.title||branch.id;
     if(branch.nodes.length!==1||nodeLabel(branch.nodes[0])!==label.textContent)branchList.append(label);
     branch.nodes.forEach(node=>appendNode(branchList,node));column.append(branchList);
    }
+   const following=group.nodes.filter(node=>node.afterBranches);
+   if(following.length){const joinedList=document.createElement('div');joinedList.className='story-tree-node-list';following.forEach(node=>appendNode(joinedList,node));column.append(joinedList);}
    path.append(column);
   }
   if(!visibleGroups.length){const note=document.createElement('p');note.className='story-tree-empty';note.textContent='这里还没有留下记忆。';path.append(note);}

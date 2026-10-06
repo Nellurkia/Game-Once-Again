@@ -20,6 +20,8 @@ h1{font-size:84px}
 .dpad{bottom:22px;right:28px}
 .survivor-scene .dpad{left:28px;right:auto;bottom:15px}
 .memory-puzzle-scene .play-header,.memory-puzzle-scene .dpad{display:none}
+.game-frame:has(.station-runner-scene) .game-controls{top:144px;right:24px}
+@media (pointer:coarse){.game-frame:has(.station-runner-scene) .game-controls button{min-width:82px;min-height:82px;font-size:28px}}
 .game-frame:fullscreen{width:1280px;height:720px;display:block;border:0;border-radius:0}
 .game-frame:fullscreen #screen{width:1280px;height:720px;max-width:none;aspect-ratio:16/9}
 .survivor-scene #phaser-host{position:absolute;inset:0;width:1280px;height:720px;display:block;overflow:hidden}

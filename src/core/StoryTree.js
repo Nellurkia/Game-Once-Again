@@ -32,7 +32,7 @@ export function buildStoryTree(scenes,story,playthrough){
  function group(id,title,subtitle){const result={id,title,subtitle,nodes:[],branches:[]};groups.push(result);return result;}
  function add(target,node,parents=Array.isArray(previous)?previous:previous?[previous]:[]){const result={...node,parents,playthrough};target.nodes.push(result);nodes.push(result);previous=result.id;return result;}
  function dialogue(target,scene,key,title){
-  (story[key]||[]).forEach((line,index)=>add(target,{id:`${scene}:dialogue:${key}:${index}`,scene,sceneProgress:{scene,kind:'dialogue',storyKey:key,index},title:`${title} · ${index+1}`,description:line.text.replace(/\{TBD\}\s*/g,''),kind:'dialogue'}));
+  (story[key]||[]).forEach((line,index)=>add(target,{id:`${scene}:dialogue:${key}:${index}`,scene,sceneProgress:{scene,kind:'dialogue',storyKey:key,index},title:`${title} · ${index+1}`,description:line.text.replace(/\{TBD\}\s*/g,''),kind:'dialogue',afterBranches:!!target.branches?.length}));
  }
  if(playthrough===1)dialogue(group('prologue','序章','暮色中的房间'),'prologue','prologue','旧掌机');
  for(const chapter of scenes.filter(scene=>/^ch[1-4]$/.test(scene.id))){
@@ -43,12 +43,13 @@ export function buildStoryTree(scenes,story,playthrough){
   if(chapter.postGameKeysByOutcome&&playthrough!==1){
    const fork=previous,ends=[];
    for(const [outcome,keys] of Object.entries(chapter.postGameKeysByOutcome)){
-    const branch={id:outcome,label:outcome==='SUCCESS_AT_STATION'?'赶上列车': '仍然错过',nodes:[]};target.branches.push(branch);previous=fork;
+    const branch={id:outcome,label:['met','SUCCESS_AT_STATION'].includes(outcome)?'赶上列车': '错过列车',nodes:[]};target.branches.push(branch);previous=fork;
     for(const key of keys)dialogue(branch,chapter.id,key,'游戏之后');
     branch.nodes.forEach(node=>node.outcome=outcome);ends.push(previous);
    }
    previous=ends;
-  }else for(const key of config.postGameKeys||[])dialogue(target,chapter.id,key,'游戏之后');
+  }
+  for(const key of config.postGameKeys||[])dialogue(target,chapter.id,key,'游戏之后');
  }
  if(playthrough!==1){
   const target=group('endings','终幕','这一次，你想留下些什么？');
