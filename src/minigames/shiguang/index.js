@@ -13,6 +13,7 @@ export function mountShiguang(parent,chapter={}){
   try{
    api=frame.contentWindow.MemoryPuzzle;if(!api)throw Error('拾光资源未加载完成');
    api.start({slotId:'once-again',variantId:(chapter.context?.playthrough??1)===1?'first':'second',
+    onAchievement:id=>{if(!disposed)chapter.onAchievement?.(id);},
     saveAdapter:{write(snapshot){if(chapter.onProgress?.(snapshot)!==true)throw Error('浏览器未能保存，请导出存档');}},
     onReturn(){
      const save=api.getSaveData();if(disposed||completed||!save.completed)return;

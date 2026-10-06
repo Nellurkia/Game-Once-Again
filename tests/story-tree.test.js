@@ -18,10 +18,14 @@ test('tree nodes follow each journey and final choices fork from the ending menu
  assert.equal(new Set(first.nodes.map(node=>node.id)).size,first.nodes.length);
  assert.equal(new Set(later.nodes.map(node=>node.id)).size,later.nodes.length);
  assert.equal(first.nodes[0].scene,'prologue');
- assert.equal(first.nodes.at(-1).id,'interlude');
- assert.equal(later.nodes[0].id,'ch1:dialogue:ch1_w2:0');
+ assert.equal(first.nodes.at(-1).id,`ch4:dialogue:p1_14:${story.p1_14.length-1}`);
+ assert.equal(later.nodes[0].id,'ch1:dialogue:p2_01:0');
  assert.ok(!later.nodes.some(node=>node.scene==='prologue'));
- for(const id of ['ending:dialogue:NE:0','ending:dialogue:TE:0','ending:BE'])assert.deepEqual(later.nodes.find(node=>node.id===id).parents,['ending_select']);
+ for(const ending of ['BE','NE','TE']){
+  const keys=story.endingSequences[ending],firstId=`ending:dialogue:${keys[0]}:0`;
+  assert.deepEqual(later.nodes.find(node=>node.id===firstId).parents,['ending_select']);
+  assert.deepEqual(later.nodes.find(node=>node.id===`ending:${ending}:card`).parents,[`ending:dialogue:${keys.at(-1)}:${story[keys.at(-1)].length-1}`]);
+ }
 });
 test('unvisited nodes cannot be selected, including an otherwise reached node in another journey',()=>{
  const {manager:m}=fixture();m.startNewGame();m.go('ch1');m.saveGameplayPosition();
@@ -34,15 +38,15 @@ test('unvisited nodes cannot be selected, including an otherwise reached node in
 });
 test('returning to an earlier dialogue restores its exact line and choices without losing later unlocks or settings',()=>{
  const {save,manager:m}=fixture();m.startNewGame();m.go('ch2');
- m.state.chapterIndex=1;m.setFlag('oldChoice',true);m.saveDialoguePosition('ch2_w1',0);
- m.setFlag('laterChoice',true);m.saveDialoguePosition('ch2_w1',1);
+ m.state.chapterIndex=1;m.setFlag('oldChoice',true);m.saveDialoguePosition('p1_04',0);
+ m.setFlag('laterChoice',true);m.saveDialoguePosition('p1_04',1);
  m.saveGameplayPosition();m.state.settings.bgmVolume=.2;m.persist();
  const restored=new GameManager(save);restored.initializeStoryTrees(scenes,story);
- assert.equal(restored.restoreStoryNode(1,'ch2:dialogue:ch2_w1:0'),true);
- assert.equal(restored.dialogueIndex('ch2_w1',2),0);
+ assert.equal(restored.restoreStoryNode(1,'ch2:dialogue:p1_04:0'),true);
+ assert.equal(restored.dialogueIndex('p1_04',story.p1_04.length),0);
  assert.deepEqual(restored.state.flags,{oldChoice:true});
  assert.equal(restored.state.settings.bgmVolume,.2);
- assert.ok(restored.state.storyTrees[1].nodes['ch2:dialogue:ch2_w1:1']);
+ assert.ok(restored.state.storyTrees[1].nodes['ch2:dialogue:p1_04:1']);
  assert.ok(restored.state.storyTrees[1].nodes['ch2:game']);
  assert.equal(new GameManager(save).state.sceneProgress.index,0);
 });
@@ -57,43 +61,44 @@ test('chapter gameplay checkpoints and unlock history remain independent between
  assert.deepEqual(m.getMinigameSave('shiguang'),{variantId:'second',pieces:[1,2,3]});
  assert.equal(m.state.playthrough,2);
 });
-test('only visited ending branches unlock; restoring an earlier ending keeps global achievements',()=>{
+test('only visited ending branches unlock; restoring an earlier ending keeps recorded endings',()=>{
  const {manager:m}=fixture();m.startNewGame();m.secondRun();m.go('ending_select');
- m.ending('NE');m.saveDialoguePosition('NE',0);m.go('credits');
- assert.equal(m.restoreStoryNode(2,'ending:dialogue:TE:0'),false);
- assert.equal(m.restoreStoryNode(2,'ending:BE'),false);
- m.go('ending_select');m.ending('TE');m.saveDialoguePosition('TE',0);
- assert.equal(m.restoreStoryNode(2,'ending:dialogue:NE:0'),true);
+ m.ending('NE');m.saveDialoguePosition('E-A-01',0);m.go('credits');
+ assert.equal(m.restoreStoryNode(2,'ending:dialogue:E-T-01:0'),false);
+ assert.equal(m.restoreStoryNode(2,'ending:BE:card'),false);
+ m.go('ending_select');m.ending('TE');m.saveDialoguePosition('E-T-01',0);
+ assert.equal(m.restoreStoryNode(2,'ending:dialogue:E-A-01:0'),true);
  assert.equal(m.state.flags.ending,'NE');
  assert.deepEqual(m.state.unlockedEndings,['NE','TE']);
- m.ending('BE');assert.equal(m.restoreStoryNode(2,'ending:BE'),true);
- assert.equal(m.state.scene,'ch1');assert.equal(m.state.chapterIndex,0);
+ m.ending('BE');m.state.sceneProgress={scene:'ending',kind:'ending_card'};m.rememberStoryNode();m.persist();
+ assert.equal(m.restoreStoryNode(2,'ending:BE:card'),true);
+ assert.equal(m.state.scene,'ending');assert.equal(m.state.chapterIndex,3);
 });
 test('legacy migration preserves the saved line, reconstructs mandatory past nodes and leaves future nodes locked',()=>{
- const state={...defaults(),scene:'ch2',chapterIndex:1,sceneProgress:{scene:'ch2',kind:'dialogue',storyKey:'ch2_w1',index:1},flags:{old:true}};
+ const state={...defaults(),scene:'ch2',chapterIndex:1,sceneProgress:{scene:'ch2',kind:'dialogue',storyKey:'p1_04',index:1},flags:{old:true}};
  delete state.storyTrees;
  const {manager:m,save}=fixture(state);
  assert.ok(m.state.storyTrees[1].nodes['prologue:dialogue:prologue:0']);
  assert.ok(m.state.storyTrees[1].nodes['ch1:game']);
- assert.equal(m.state.storyTrees[1].lastNodeId,'ch2:dialogue:ch2_w1:1');
+ assert.equal(m.state.storyTrees[1].lastNodeId,'ch2:dialogue:p1_04:1');
  assert.equal(m.restoreStoryNode(1,'ch2:game'),false);
  assert.equal(m.restoreStoryNode(2,'ch1:game'),false);
- assert.equal(m.restoreStoryNode(1,'ch2:dialogue:ch2_w1:1'),true);
+ assert.equal(m.restoreStoryNode(1,'ch2:dialogue:p1_04:1'),true);
  assert.equal(m.state.sceneProgress.index,1);assert.equal(m.state.flags.old,true);
  assert.ok(new GameManager(save).state.storyTrees[1].nodes['ch1:game']);
 });
 test('legacy later journeys unlock the completed first tree without revealing unchosen endings',()=>{
  const {manager:m}=fixture({...defaults(),playthrough:2,scene:'ch1'});
- assert.ok(m.state.storyTrees[1].nodes.interlude);
- assert.ok(m.state.storyTrees[2].nodes['ch1:dialogue:ch1_w2:0']);
+ assert.ok(m.state.storyTrees[1].nodes[`ch4:dialogue:p1_14:${story.p1_14.length-1}`]);
+ assert.ok(m.state.storyTrees[2].nodes['ch1:dialogue:p2_01:0']);
  assert.equal(m.restoreStoryNode(2,'ending_select'),false);
- assert.equal(m.restoreStoryNode(2,'ending:dialogue:NE:0'),false);
+ assert.equal(m.restoreStoryNode(2,'ending:dialogue:E-A-01:0'),false);
 });
 test('legacy saves with missing or invalid cursors keep their flags at a selectable first line',()=>{
- for(const progress of [null,{scene:'ch2',kind:'dialogue',storyKey:'ch2_w1',index:99}]){
+ for(const progress of [null,{scene:'ch2',kind:'dialogue',storyKey:'p1_04',index:99}]){
   const {manager:m}=fixture({...defaults(),scene:'ch2',chapterIndex:1,sceneProgress:progress,flags:{oldChoice:true}});
-  assert.equal(m.state.storyTrees[1].lastNodeId,'ch2:dialogue:ch2_w1:0');
-  assert.equal(m.restoreStoryNode(1,'ch2:dialogue:ch2_w1:0'),true);
+  assert.equal(m.state.storyTrees[1].lastNodeId,'ch2:dialogue:p1_04:0');
+  assert.equal(m.restoreStoryNode(1,'ch2:dialogue:p1_04:0'),true);
   assert.equal(m.state.flags.oldChoice,true);assert.equal(m.state.sceneProgress.index,0);
   assert.equal(m.restoreStoryNode(1,'ch2:game'),false);
  }

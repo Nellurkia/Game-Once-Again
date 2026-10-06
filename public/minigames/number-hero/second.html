@@ -396,7 +396,9 @@ function flash(a){ flashAmt = Math.max(flashAmt, a); }
    开局 / 重开
    ══════════════════════════════════════════════════════ */
 function startRun(which){
+  if(hostOptions)try{window.parent.playGameSfx?.('select');}catch{}
   if(hostOptions)which=hostOptions.playthrough===1?'NG':'NGP';
+  heroStopHits=0;heroStopTrackingKnown=true;
   run = which;
   R = RUNS[which];
   P = { x: 0, y: 0, num: R.startNum, sword: false, popT: 0 };
@@ -509,12 +511,13 @@ function onHit(e){
     SFX.clash();
   }
   else if(e.kind === 'later'){
+    heroStopHits++;
     state = 'stun'; stateT = 0;
     stunLeft = 2.1;
     SFX.bad();
     float(P.x, P.y + PH + 3.2, '以 后 再 说。', '#ff5a5a', 1.5);
     shake(9); flash(0.32);
-    e.dead = true;
+    e.dead = true;reportHeroProgress();
   }
   else if(e.kind === 'gold'){
     P.num += e.v;
@@ -1519,7 +1522,7 @@ const $modal = document.getElementById('modal');
 
 function endNG(){
   if(state === 'ended') return;
-  state = 'ended';
+  state = 'ended';awardHeroForward();reportHeroProgress();
   ngCleared = true;
   fadeAmt = 1;
 
@@ -1559,7 +1562,7 @@ function endNG(){
 
 function endNGP(){
   if(state === 'ended') return;
-  state = 'ended';
+  state = 'ended';awardHeroForward();reportHeroProgress();
   ngpCleared = true;
 
   const me = Math.round(P.num);
@@ -1617,18 +1620,22 @@ P = { x:0, y:0, num:5, sword:false, popT:0 };
 R = RUNS.NGP;
 
 /* Host integration: chapter state is saved by the parent game manager. */
+let heroStopHits=0,heroStopTrackingKnown=true;
+function awardHeroForward(){if(heroStopTrackingKnown&&heroStopHits===0&&ents.some(e=>e.kind==='later'))hostOptions?.onAchievement?.('hero-forward');}
 let hostOptions=null,hostPaused=false,manualPaused=false,hostSaveClock=0,heroFrame=0,chapterDelivered=false;
 const $pauseScreen=document.getElementById('pauseScreen');
 const $pauseBtn=document.getElementById('pauseBtn');
 function clearHeroInput(){for(const key of Object.keys(keys))keys[key]=false;mActive=false;}
 function setManualPause(value){manualPaused=!!value;clearHeroInput();$pauseScreen?.classList.toggle('on',manualPaused&&!hostPaused);if($pauseBtn)$pauseBtn.textContent=manualPaused?'继续攀登 · P':'暂停 · P';}
-function heroSnapshot(){return {kind:'number-hero-climb-v2',playthrough:run==='NG'?1:2,power:Math.round(P?.num||R.startNum),position:{x:P?.x||0,y:P?.y||0},entities:ents.map(e=>({dead:!!e.dead,hit:!!e.hit})),ended:state==='ended',sword:!!P?.sword,chestOpened};}
+function heroSnapshot(){return {kind:'number-hero-climb-v2',playthrough:run==='NG'?1:2,power:Math.round(P?.num||R.startNum),position:{x:P?.x||0,y:P?.y||0},entities:ents.map(e=>({dead:!!e.dead,hit:!!e.hit})),ended:state==='ended',sword:!!P?.sword,chestOpened,stopHits:heroStopHits,stopTrackingKnown:heroStopTrackingKnown};}
 function reportHeroProgress(){if(hostOptions?.onProgress&&state!=='title')hostOptions.onProgress(heroSnapshot());}
-function finishHeroChapter(outcome){if(chapterDelivered)return;chapterDelivered=true;reportHeroProgress();hostOptions?.onComplete?.({success:true,score:Math.round(P?.num||0),flags:{numberHeroComplete:true,numberHeroSword:!!P?.sword,numberHeroOutcome:outcome}});}
+function finishHeroChapter(outcome){if(chapterDelivered)return;chapterDelivered=true;awardHeroForward();reportHeroProgress();hostOptions?.onComplete?.({success:true,score:Math.round(P?.num||0),flags:{numberHeroComplete:true,numberHeroSword:!!P?.sword,numberHeroOutcome:outcome}});}
 function restoreHero(snapshot){
  if(snapshot?.kind!=='number-hero-climb-v2'||snapshot.playthrough!==(hostOptions.playthrough===1?1:2)||!Number.isFinite(snapshot.power)||!Number.isFinite(snapshot.position?.y))return false;
  const which=hostOptions.playthrough===1?'NG':'NGP';run=which;R=RUNS[which];P={x:Math.max(-X_LIMIT,Math.min(X_LIMIT,Number(snapshot.position.x)||0)),y:Math.max(0,Number(snapshot.position.y)||0),num:snapshot.power,sword:!!snapshot.sword,popT:0};
  buildCourse();buildRocks();for(let i=0;i<ents.length;i++){const saved=snapshot.entities?.[i];if(saved){ents[i].dead=!!saved.dead;ents[i].hit=!!saved.hit;}}
+ heroStopTrackingKnown=snapshot.stopTrackingKnown!==false&&Array.isArray(snapshot.entities)&&snapshot.entities.length===ents.length;
+ heroStopHits=Number.isInteger(snapshot.stopHits)&&snapshot.stopHits>=0?snapshot.stopHits:ents.filter(e=>e.kind==='later'&&(e.dead||e.hit)).length;
  chestOpened=!!snapshot.chestOpened;camY=P.y;parts=[];floats=[];state='run';stateT=0;T=0;clash=null;stunLeft=0;chestSeq=null;bossSeq=null;fadeAmt=0;shakeAmt=0;flashAmt=0;
  document.getElementById('menu').classList.add('off');$modal.classList.remove('on');syncHUD();syncTrack();
  if(snapshot.ended){state='run';if(which==='NG')endNG();else endNGP();}
@@ -1640,7 +1647,7 @@ function startHostGame(options={}){
 }
 window.NumberHero={start:startHostGame,getSaveData:heroSnapshot,setHostPaused(value){hostPaused=!!value;if(hostPaused){clearHeroInput();$pauseScreen?.classList.remove('on');}else if(manualPaused)$pauseScreen?.classList.add('on');},dispose(){cancelAnimationFrame(heroFrame);clearHeroInput();try{actx?.close();}catch{};},};
 $pauseBtn?.addEventListener('click',()=>setManualPause(!manualPaused));
-$pauseScreen?.querySelector('button')?.addEventListener('click',()=>setManualPause(false));
+$pauseScreen?.querySelector('button')?.addEventListener('click',()=>{try{window.parent.playGameSfx?.('select');}catch{}setManualPause(false);});
 document.querySelectorAll('#touchPad [data-key]').forEach(button=>{
  const key=button.dataset.key;button.addEventListener('pointerdown',event=>{event.preventDefault();button.setPointerCapture?.(event.pointerId);keys[key]=true;});
  const release=()=>{keys[key]=false;};button.addEventListener('pointerup',release);button.addEventListener('pointercancel',release);button.addEventListener('lostpointercapture',release);

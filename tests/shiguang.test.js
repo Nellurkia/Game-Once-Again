@@ -11,5 +11,5 @@ test('Shiguang first journey leaves three visual pieces missing; second requires
  for(const p of level.pieces)assert.ok(level.variants.second.completionPieceIds.includes(p.id));
 });
 test('chapter four routes to supplied project using a separate save identifier',()=>{
- const scenes=JSON.parse(readFileSync(new URL('../public/data/scenes.json',import.meta.url)));assert.equal(scenes.find(c=>c.id==='ch4').minigame,'shiguang');assert.equal(scenes.find(c=>c.id==='ch3').minigame,'beforeDeparture');
+ const scenes=JSON.parse(readFileSync(new URL('../public/data/scenes.json',import.meta.url)));assert.equal(scenes.find(c=>c.id==='ch4').minigame,'shiguang');assert.equal(scenes.find(c=>c.id==='ch3').minigame,null);
 });

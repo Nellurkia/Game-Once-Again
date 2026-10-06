@@ -7,7 +7,7 @@ export function mountNumberHero(parent,chapter){
  const observer=new MutationObserver(pause),dialog=document.querySelector('dialog');if(dialog)observer.observe(dialog,{attributes:true,attributeFilter:['open']});
  document.addEventListener('visibilitychange',pause);
  frame.onload=()=>{if(disposed)return;api=frame.contentWindow.NumberHero;if(!api){parent.innerHTML='<p>数字勇者加载失败，请刷新后重试。</p>';return;}
-  try{api.start({save:chapter.save,playthrough:chapter.context.playthrough,sfxVolume:chapter.context.sfxVolume,onProgress:chapter.onProgress,onComplete:result=>{if(disposed||completed)return;completed=true;chapter.onComplete(result);}});pause();}
+  try{api.start({save:chapter.save,playthrough:chapter.context.playthrough,sfxVolume:chapter.context.sfxVolume,onProgress:chapter.onProgress,onAchievement:id=>{if(!disposed)chapter.onAchievement?.(id);},onComplete:result=>{if(disposed||completed)return;completed=true;chapter.onComplete(result);}});pause();}
   catch(error){parent.innerHTML=`<p>数字勇者加载失败：${error.message}。请刷新后重试。</p>`;}};
  parent.append(frame);
  return {destroy(){if(disposed)return;disposed=true;api?.dispose();observer.disconnect();document.removeEventListener('visibilitychange',pause);frame.onload=null;frame.remove();}};

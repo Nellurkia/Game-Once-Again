@@ -25,7 +25,7 @@ function move(body,dx,dy){
 export class SurvivorRun {
  constructor({random=Math.random,roundDuration=22}={}){
   this.random=random;this.roundDuration=roundDuration;this.mode='ready';this.wave=1;this.time=0;this.kills=0;
-  this.items=[];this.offers=[];this.enemies=[];this.shots=[];this.hazards=[];this.drops=[];this.effects=[];
+  this.items=[];this.offers=[];this.enemies=[];this.shots=[];this.hazards=[];this.drops=[];this.effects=[];this.damageTaken=0;
   this.player={x:640,y:420,r:13,hp:100,maxHp:100,speed:215,damage:18,interval:.43,projectiles:1,pierce:0,armor:0,breath:4,maxBreath:4,healing:4,hidden:false,exhausted:false,invulnerable:0};
   this.fireTimer=0;this.spawnTimer=.3;this.orbitTimer=0;this.nextId=1;this.boss=null;
  }
@@ -56,7 +56,7 @@ export class SurvivorRun {
  }
  hurt(amount){
   const p=this.player;if(p.invulnerable>0||!['wave','boss'].includes(this.mode))return;
-  p.hp=Math.max(0,p.hp-Math.max(1,amount-p.armor));p.invulnerable=.8;
+  const previousHp=p.hp;p.hp=Math.max(0,p.hp-Math.max(1,amount-p.armor));this.damageTaken+=previousHp-p.hp;p.invulnerable=.8;
   this.effects.push({x:p.x,y:p.y,r:25,life:.25,color:'hurt'});
   if(p.hp<=0)this.mode='lost';
  }

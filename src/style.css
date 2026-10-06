@@ -22,6 +22,8 @@ h1{font-size:84px}
 .memory-puzzle-scene .play-header,.memory-puzzle-scene .dpad{display:none}
 .game-frame:fullscreen{width:1280px;height:720px;display:block;border:0;border-radius:0}
 .game-frame:fullscreen #screen{width:1280px;height:720px;max-width:none;aspect-ratio:16/9}
+.survivor-scene #phaser-host{position:absolute;inset:0;width:1280px;height:720px;display:block;overflow:hidden}
+.survivor-scene #phaser-host canvas{width:1280px!important;height:720px!important;max-width:none;max-height:none}
 .title-scene{height:720px;width:1280px;position:relative;overflow:hidden;isolation:isolate;background:#30251d;color:#f8eacb}
 .title-art,.title-shade{position:absolute;inset:0}
 .title-art{z-index:-2;background-image:var(--title-art);background-position:center;background-size:cover}
@@ -49,6 +51,27 @@ h1{font-size:84px}
 @keyframes dust-drift{to{background-position:100px -120px,13px -115px}}
 .staff-list{display:grid;grid-template-columns:1fr 1fr;gap:12px 25px;padding:18px 0;color:#c9beca;font-size:13px}
 .staff-list b{font-weight:400;color:#e2cda6;text-align:right}
+.title-achievements{position:absolute;left:150px;right:150px;bottom:118px;z-index:4}
+.achievement-heading{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:28px;padding:0 4px 7px;background:none;border:0;color:#ffe8bb;font-size:12px;letter-spacing:1px;text-shadow:0 1px 4px #291d16}
+.achievement-heading span{font-size:10px;letter-spacing:0}
+.achievement-home-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.achievement-mini{display:flex;align-items:center;gap:9px;min-height:76px;padding:10px;border:1px solid #74818b66;border-radius:10px;background:#262c32ed;text-align:left;color:#a4abb2;box-shadow:0 3px 8px #140e1444}
+.achievement-mini svg{width:25px;height:25px;flex:none}
+.achievement-mini span{font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.achievement-mini.unlocked{background:#3f4839ee;border-color:#cbb37a99;color:#ffe1a1}
+.achievement-mini:hover{border-color:#e2d5b7;transform:translateY(-2px)}
+dialog.achievements-modal{width:min(640px,94vw);max-height:calc(100dvh - 28px);overflow-y:auto;padding:24px}
+.achievement-dialog h2{margin:8px 0;font-size:25px}.achievement-dialog h2 small{font:13px sans-serif;color:#afbdba;margin-left:12px}
+.achievement-dialog>p{margin:8px 0 16px;line-height:1.7}
+.achievement-list{display:grid;gap:9px}
+.achievement-card{display:flex;gap:16px;align-items:center;padding:14px;border:1px solid #56616b;border-radius:10px;background:#283039;color:#929ba5}
+.achievement-card>svg{width:32px;height:32px;flex:none}
+.achievement-card small{font-size:10px;letter-spacing:1px}
+.achievement-card h3{font-size:15px;margin:5px 0;line-height:1.55;color:inherit}
+.achievement-card p{font-size:12px!important;line-height:1.6;margin:0;color:inherit;opacity:.85}
+.achievement-card.unlocked{background:#334335;border-color:#9c9566;color:#f1d8a3}
+.achievement-toast{position:fixed;bottom:max(20px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:14px;width:min(360px,calc(100vw - 24px));padding:15px 18px;border:1px solid #c2ac73;border-radius:13px;background:#273829f5;color:#f4dfa8;box-shadow:0 8px 30px #0006;pointer-events:none}
+.achievement-toast svg{width:28px;height:28px;flex:none}.achievement-toast span{display:block;font-size:10px;letter-spacing:2px;margin-bottom:5px}.achievement-toast strong{font-size:14px;font-weight:500;line-height:1.5}
 .narrative-scene{isolation:isolate;background:#172132}
 .narrative-scene .narrative-room{position:absolute;inset:0;width:100%;height:100%;opacity:1;mask-image:none;z-index:-2}
 .narrative-illustration{width:100%;height:100%;object-fit:cover}
@@ -113,53 +136,6 @@ body.mobile-portrait #orientation-hint{display:flex}
 .story-tree-footer .primary{font-size:13px;padding:12px 20px;min-width:210px;flex:none}
 .story-tree-footer .primary:disabled{opacity:.4;cursor:default}
 .story-tree-footer .secondary{font-size:12px;padding:12px 16px;flex:none}
-.departure-game{position:relative;width:1280px;height:720px;color:#e4ddce;background:#16212d;overflow:hidden;font-family:'Noto Sans SC',sans-serif}
-.departure-game canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;outline:none}
-.departure-header{position:absolute;top:24px;left:36px;right:346px;height:75px;display:flex;justify-content:space-between;align-items:center;border:0;pointer-events:none}
-.departure-header .eyebrow{display:block;font-size:9px;letter-spacing:3px;color:#bda875}
-.departure-header h2{display:block;font:600 28px/1.4 'Noto Serif SC',serif;letter-spacing:3px;margin:4px 0;color:#f1ddba}
-.departure-header small{display:block;font-size:12px;letter-spacing:1px;color:#a7b4b8}
-.departure-clock{min-width:234px;padding:13px 17px;border:1px solid #b0a07a66;border-radius:13px;background:#25333bcc}
-.departure-clock>span{font-size:11px;letter-spacing:2px;color:#b4baad}
-.departure-clock strong{font:500 31px/1.4 Georgia,serif;color:#edd8ab;margin-left:12px;font-variant-numeric:tabular-nums}
-.departure-clock small{font-size:11px;letter-spacing:0;margin-top:3px}
-.departure-sidebar{position:absolute;right:28px;top:112px;width:284px;height:490px;padding:21px 20px;border:1px solid #59707b66;border-radius:15px;background:#23303ae8;display:flex;flex-direction:column;gap:10px}
-.departure-section-label{font-size:10px;letter-spacing:1px;color:#b9aa87}
-.departure-sidebar>strong{font:500 19px/1.5 'Noto Serif SC',serif;color:#dfd7ba}
-.departure-sidebar>p{font-size:12px;line-height:1.9;color:#bdc5c2;margin:0;min-height:68px}
-.departure-sidebar button,.departure-actions button,.departure-task button{border:1px solid #9a987677;border-radius:9px;background:#3b4f59;color:#eee0be;padding:10px 12px;font-size:12px}
-.departure-sidebar button:hover,.departure-actions button:hover{background:#56656a;border-color:#d1ba80}
-.departure-sidebar button:disabled,.departure-actions button:disabled{opacity:.4;cursor:default}
-.departure-hesitation{margin:6px 0 8px;border-top:1px solid #526d7355;padding-top:14px}
-.departure-hesitation>span{font-size:11px;color:#a7b4b8}
-#departure-hesitation{display:flex;gap:8px;margin-top:10px}
-#departure-hesitation i{width:36px;height:5px;border-radius:3px;background:#415561}
-#departure-hesitation i.lit{background:#b09a74}
-#departure-bag{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
-#departure-bag>span{border:1px dashed #6d7b7388;border-radius:7px;padding:10px 5px;color:#879c9d;text-align:center;font-size:10px;white-space:nowrap}
-#departure-bag>span.packed{color:#ded6b4;border-style:solid;background:#3e504766}
-#departure-goal{border-top:1px solid #526d7355;padding-top:12px;margin-top:auto;min-height:44px}
-.departure-footer{position:absolute;bottom:24px;left:36px;right:28px;display:flex;justify-content:space-between;align-items:center;height:78px;border-top:1px solid #526d7355;padding-top:14px}
-.departure-footer strong{font-size:14px;font-weight:500;color:#d8c9a4}
-.departure-footer p{font-size:11px;line-height:1.9;color:#849ea9;margin:7px 0 0}
-.departure-actions{display:flex;gap:10px}
-.departure-actions button:last-child{background:#b49a69;color:#172b34;font-size:14px;padding:13px 30px;border-color:#d4bb83}
-.departure-task{position:absolute;left:72px;top:510px;width:820px;padding:12px 18px;background:#152330ed;border:1px solid #b09d6a66;border-radius:12px;font-size:12px;color:#dac9a5}
-.departure-task[hidden],.departure-overlay[hidden]{display:none}
-.departure-task progress{display:block;width:100%;height:5px;margin-top:11px;accent-color:#c4b17f}
-.departure-task button{position:absolute;right:18px;top:-44px;background:#294450}
-.departure-overlay{position:absolute;inset:105px 20px 100px;background:#101b2acf;backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;border-radius:16px;overflow:auto;padding:16px;z-index:2}
-.departure-dialog{width:800px;padding:25px 32px;border:1px solid #b2a17c77;border-radius:17px;background:#273943f5;box-shadow:0 18px 50px #0b142755;max-height:100%;overflow:auto}
-.departure-dialog .eyebrow{color:#b6a777;font-size:9px;letter-spacing:3px}
-.departure-dialog h3{font:500 27px/1.5 'Noto Serif SC',serif;letter-spacing:2px;color:#eddabb;margin:12px 0 17px}
-.departure-dialog>p{font-size:16px;line-height:2;color:#c8cfcd;margin:0 0 25px;white-space:pre-line}
-.departure-dialog-actions{display:flex;gap:12px;flex-wrap:wrap}
-.departure-dialog-actions button{flex:1;min-width:190px;white-space:pre-line;border:1px solid #a19e7977;border-radius:11px;background:#465a5f;padding:14px;color:#e9ddba;font-size:13px;line-height:1.8}
-.departure-dialog-actions button:hover{background:#67716c;border-color:#dfc48a}
-.departure-dialog-actions button:disabled{opacity:.4;cursor:default}
-.departure-dialog details{margin-top:19px;font-size:11px;color:#a2b4b6}
-.departure-dialog summary{cursor:pointer}
-.departure-timeline{white-space:pre-line;line-height:1.8;margin:12px 0 0;color:#b4c2c2}
 .script-ending-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:54px;background:#111a25;color:#eee2ce;overflow:hidden}
 .script-ending-card:before{content:'';position:absolute;inset:-20%;background:radial-gradient(ellipse at 50% 55%,#baa07824,transparent 50%);animation:ending-breathe 7s ease-in-out infinite alternate}
 .script-ending-card>*{position:relative;z-index:1}
@@ -254,8 +230,5 @@ body.mobile-portrait #orientation-hint{display:flex}
  button{touch-action:manipulation}
  .narrative-advance-hint{right:6%;bottom:2.4%;font-size:12px;color:#e2d6e3}
  .dialogue-actions button{min-width:124px;min-height:76px;padding:10px 14px;font-size:14px}
- .departure-sidebar button,.departure-actions button,.departure-task button{min-height:72px;font-size:15px}
- .departure-actions button{min-width:126px}
- .departure-dialog-actions button{min-height:78px;font-size:16px}
  .survivor-scene .dpad{display:none}
 }

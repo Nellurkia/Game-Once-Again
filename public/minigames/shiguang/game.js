@@ -3,6 +3,7 @@
   'use strict';
   const C = window.MEMORY_CONFIG, L = window.MEMORY_LEVEL;
   const $ = id => document.getElementById(id);
+  const playHostSfx = name => {try{window.parent.playGameSfx?.(name);}catch{}};
   const canvas = $('world'), ctx = canvas.getContext('2d');
   const dragCanvas = $('drag-layer'), dc = dragCanvas.getContext('2d');
   const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
@@ -103,7 +104,7 @@
   function showModal(title,eyebrow,html,buttons){
     cancelDrag();clearInputs();modalReturn=state==='COMPLETED'?'COMPLETED':'PLAYING';setState(modalReturn==='COMPLETED'?'COMPLETED':'PAUSED');
     $('modal-title').textContent=title;$('modal-eyebrow').textContent=eyebrow;$('modal-body').innerHTML=html;
-    $('modal-actions').replaceChildren();buttons.forEach(b=>{const btn=document.createElement('button');btn.textContent=b.label;if(b.light)btn.className='light';btn.onclick=b.action;$('modal-actions').append(btn);});
+    $('modal-actions').replaceChildren();buttons.forEach(b=>{const btn=document.createElement('button');btn.textContent=b.label;btn.dataset.sfx=b.light?'select':'confirm';if(b.light)btn.className='light';btn.onclick=b.action;$('modal-actions').append(btn);});
     $('modal').hidden=false;requestAnimationFrame(()=>$('modal-actions').querySelector('button')?.focus());
   }
   function closeModal(){ $('modal').hidden=true;clearInputs();setState(modalReturn);canvas.focus({preventScroll:true}); }
@@ -268,7 +269,7 @@
       if(save.pieceStates['station-sign']!=='placed'){hint('灯座旁写着：请按站牌上的顺序。先把缺失的站牌拼回来。',6);return;}
       const expected=L.signal.order[save.puzzleFlags.stationProgress];
       if(item.id===expected){save.puzzleFlags.stationProgress++;toast('信号灯亮起：'+item.name+' · '+save.puzzleFlags.stationProgress+'/3');}
-      else{save.puzzleFlags.stationProgress=item.id===L.signal.order[0]?1:0;toast('顺序没有接上，信号灯重新开始。');hint('再看看修好的站牌。按 R 可回安全点，已拼好的路不会消失。',7);}
+      else{save.storyFlags.wrongSignalOrder=true;context.onAchievement?.('memory-rebel');save.puzzleFlags.stationProgress=item.id===L.signal.order[0]?1:0;toast('顺序没有接上，信号灯重新开始。');hint('再看看修好的站牌。按 R 可回安全点，已拼好的路不会消失。',7);}
       if(save.puzzleFlags.stationProgress===3){save.puzzleFlags.stationSignal=true;hint('信号接通，车站右侧的栅门打开了。',8);toast('末班车的信号终于接通。',3500);}
       updateGoal();persist();
     }else if(item.type==='key'){
@@ -297,7 +298,7 @@
       if(player.vy>=0&&prevY+player.height<=s.y+1){player.y=s.y-player.height;player.vy=0;player.grounded=true;}
       else if(!s.oneWay&&player.vy<0&&prevY>=s.y+s.height-1){player.y=s.y+s.height;player.vy=0;}
     }
-    if(player.y>L.fallY){beginReturn();return;}
+    if(player.y>L.fallY){save.storyFlags.fellIntoHole=true;context.onAchievement?.('memory-fall');persist();beginReturn();return;}
     if(player.vx){save.tutorialFlags.moved=true;idleSeconds=0;}
     const zi=currentZone(),zone=L.zones[zi];
     for(const cp of L.checkpoints)if(player.grounded&&ready(cp)&&player.x>=cp.x-20&&player.x<cp.x+120&&Math.abs(player.y-cp.y)<2&&save.checkpointId!==cp.id){save.checkpointId=cp.id;persist();hint('这里留下了一个安全位置。按 R 可以返回。',3);}
@@ -406,6 +407,7 @@
   $('continue-button').onclick=()=>{save=storedCandidate;spawn();enter(true);};
   $('map-button').onclick=showMap;$('help-button').onclick=showHelp;$('pause-button').onclick=pause;$('story-close').onclick=closeStory;$('import-file').onchange=importSave;
   touchButtons.forEach(button=>{button.addEventListener('pointerdown',pressTouch);button.addEventListener('pointerup',releaseTouch);button.addEventListener('pointercancel',releaseTouch);button.addEventListener('lostpointercapture',releaseTouch);});
+  document.addEventListener('click',event=>{const button=event.target.closest('[data-sfx]');if(button&&!button.disabled)playHostSfx(button.dataset.sfx);},true);
   $('game').addEventListener('click',advanceStoryPointer);
   window.addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);window.addEventListener('keydown',onKeyDown);window.addEventListener('keyup',onKeyUp);
   window.addEventListener('pointermove',updateDrag);window.addEventListener('pointerup',finishDrag);window.addEventListener('pointercancel',cancelDrag);

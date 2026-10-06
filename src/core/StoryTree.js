@@ -35,11 +35,11 @@ export function buildStoryTree(scenes,story,playthrough){
   (story[key]||[]).forEach((line,index)=>add(target,{id:`${scene}:dialogue:${key}:${index}`,scene,sceneProgress:{scene,kind:'dialogue',storyKey:key,index},title:`${title} · ${index+1}`,description:line.text.replace(/\{TBD\}\s*/g,''),kind:'dialogue'}));
  }
  if(playthrough===1)dialogue(group('prologue','序章','暮色中的房间'),'prologue','prologue','旧掌机');
- for(const chapter of scenes.filter(scene=>scene.minigame)){
+ for(const chapter of scenes.filter(scene=>/^ch[1-4]$/.test(scene.id))){
   const config=chapter[playthrough===1?'week1':'week2'];
   const target=group(chapter.id,chapter.title,chapter.subtitle);
   for(const key of config.dialogueKeys||[config.dialogueKey])dialogue(target,chapter.id,key,'入场对白');
-  add(target,{id:`${chapter.id}:game`,scene:chapter.id,sceneProgress:{scene:chapter.id,kind:'game'},title:chapter.subtitle,description:config.label,kind:'game'});
+  if(chapter.minigame)add(target,{id:`${chapter.id}:game`,scene:chapter.id,sceneProgress:{scene:chapter.id,kind:'game'},title:chapter.subtitle,description:config.label,kind:'game'});
   if(chapter.postGameKeysByOutcome&&playthrough!==1){
    const fork=previous,ends=[];
    for(const [outcome,keys] of Object.entries(chapter.postGameKeysByOutcome)){

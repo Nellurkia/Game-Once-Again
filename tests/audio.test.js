@@ -42,8 +42,9 @@ test('blocked playback can retry on the next gesture without an unhandled reject
 test('chapter overrides and default music resolve under a deployment subdirectory',()=>{
   const config=JSON.parse(readFileSync(new URL('../public/data/music.json',import.meta.url)));
   assert.ok(existsSync(new URL('../public/'+config.default,import.meta.url)));
-  assert.equal(resolveBgm(config,'ch1','/once-again/'),'/once-again/assets/audio/bgm_default.mp3');
+  assert.equal(resolveBgm(config,'ch1','/once-again/'),'/once-again/assets/audio/bgm_ch1_pacman.mp3');
   config.scenes.ch1='assets/audio/childhood.mp3';
   assert.equal(resolveBgm(config,'ch1','/once-again/'),'/once-again/assets/audio/childhood.mp3');
-  assert.equal(resolveBgm(config,'ch2','/once-again/'),'/once-again/assets/audio/bgm_default.mp3');
+  assert.equal(resolveBgm(config,'ch2','/once-again/'),'/once-again/assets/audio/bgm_ch2_night-garden.mp3');
+  assert.equal(resolveBgm(config,'unconfigured-scene','/once-again/'),'/once-again/assets/audio/bgm_default.mp3');
 });

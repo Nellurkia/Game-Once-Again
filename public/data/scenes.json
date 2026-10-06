@@ -69,29 +69,26 @@
   {
     "id": "ch3",
     "title": "第三幕 · 青年",
-    "subtitle": "出门之前",
+    "subtitle": "出发的那一天",
     "age": "青年 · 出发的那一天",
-    "minigame": "beforeDeparture",
+    "minigame": null,
     "week1": {
-      "dialogueKey": "ch3_departure_w1",
-      "label": "看清准备与等待的代价，重访错过 A 的那一天",
+      "dialogueKey": "p1_06",
+      "label": "青年时期的故事",
       "dialogueKeys": [
-        "ch3_departure_w1"
+        "p1_06"
       ],
       "postGameKeys": [
         "p1_07"
       ]
     },
     "week2": {
-      "dialogueKey": "ch3_departure_w2",
-      "label": "19:00 前离开住所，19:30 前走到 A 的身边",
+      "dialogueKey": "p2_06",
+      "label": "青年时期的故事",
       "dialogueKeys": [
-        "ch3_departure_w2"
+        "p2_06"
       ],
-      "postGameKeys": []
-    },
-    "postGameKeysByOutcome": {
-      "SUCCESS_AT_STATION": [
+      "postGameKeys": [
         "p2_07",
         "p2_08",
         "p2_09",
@@ -99,9 +96,6 @@
         "p2_11",
         "p2_12",
         "p2_13"
-      ],
-      "FAILED_LATE": [
-        "p2_departure_late"
       ]
     }
   },

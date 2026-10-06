@@ -26,7 +26,7 @@ export function narrativeIllustration(key,index,state){
   p1_04:['T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T16-teen-classroom-bullying.png','T16-teen-classroom-bullying.png','T16-teen-classroom-bullying.png','T16-teen-classroom-bullying.png','T17-teen-scattered-drawings.png','T18-teen-friend-helps.png','T18-teen-friend-helps.png','T17-teen-scattered-drawings.png','T17-teen-scattered-drawings.png'],
   p1_05_pre:['T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T19-teen-hallway-goodbye.png','T19-teen-hallway-goodbye.png','T19-teen-hallway-goodbye.png','T19-teen-hallway-goodbye.png','T19-teen-hallway-goodbye.png','T14-teen-console-stairs.png'],
   p1_05_post:['T19-teen-hallway-goodbye.png'],
-  p1_06:['Y1-rental-night.png','Y4-door-hesitation.png'],p1_07:['Y6-empty-platform.png'],
+  p1_06:['Y1-rental-night.png','Y4-door-hesitation.png'],p1_07:['Y6-empty-platform.png'],p2_06:['Y1-rental-night.png','Y10-ng-running-corridor.png'],
   p1_08:['A5-empty-child-room.png'],p1_09:['A5-empty-child-room.png'],p1_10:['A5-empty-child-room.png'],p1_11:['A5-empty-child-room.png'],p1_12_pre:['A5-empty-child-room.png'],p1_12_post:['Y6-empty-platform.png'],
   p2_01:['C1-bedroom-night.png'],p2_03:['NG1-mother-enters.png'],p2_04:['T7-chapter-card.png'],p2_05_pre:['T6-stairwell-console.png'],p2_05_post:['T13-minigame-week2.png'],
   p2_07:['Y11-ng-platform-reunion.png'],p2_08:['Y12-ng-side-by-side.png'],p2_09:['A5-empty-child-room.png'],p2_10:['A5-empty-child-room.png'],p2_11:['A5-empty-child-room.png'],p2_12:['Y12-ng-side-by-side.png'],p2_13:['Y12-ng-side-by-side.png'],p2_14:['Y1-rental-night.png'],p2_15:['C7-morning-asleep.png'],p2_16:['Y6-empty-platform.png'],p2_17:['Y12-ng-side-by-side.png'],p2_18:['Y1-rental-night.png'],
@@ -36,14 +36,11 @@ export function narrativeIllustration(key,index,state){
   ch1_w1:['C1-bedroom-night.png'],ch1_w2:['C3-hand-on-door.png'],
   ch2_w1:['T6-stairwell-console.png','T7-chapter-card.png'],
   ch2_w2:['T6-stairwell-console.png','T13-minigame-week2.png'],
-  ch3_departure_w1:['Y1-rental-night.png','Y4-door-hesitation.png'],
-  ch3_departure_w2:['Y1-rental-night.png','Y10-ng-running-corridor.png'],
-  ch3_departure_missed:['Y6-empty-platform.png'],ch3_departure_late:['Y4-door-hesitation.png'],ch3_departure_success:['Y11-ng-platform-reunion.png','Y12-ng-side-by-side.png'],
   ch4_w1:['A5-empty-child-room.png'],ch4_w2:['A5-empty-child-room.png'],
   NE:['E3-save-current-life.png'],TE:['E4-restore-save.png']
  };
  if(key==='outro'){
-  if(state.scene==='ch3')return state.flags.youthOutcome==='SUCCESS_AT_STATION'?'Y11-ng-platform-reunion.png':'Y6-empty-platform.png';
+  if(state.scene==='ch3')return revisit?'Y11-ng-platform-reunion.png':'Y6-empty-platform.png';
   return state.scene==='ch4'?'A5-empty-child-room.png':state.scene==='ch2'?'T7-chapter-card.png':revisit?'NG1-mother-enters.png':'C7-morning-asleep.png';
  }
  const supplied=suppliedImage(key,index);if(supplied)return supplied;

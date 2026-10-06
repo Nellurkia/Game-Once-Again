@@ -1,7 +1,7 @@
 import {register} from '../index.js';
 import {SurvivorRun,ARENA,SHELTERS,WALLS,ITEMS} from './model.js';
 
-register('survivors',{create(scene,config,onComplete){
+register('survivors',{create(scene,config,onComplete,{onAchievement}={}){
  let run=new SurvivorRun(),overlay=null,lastMode='',destroyed=false,finished=false,hideToggle=false,pointerTarget=null,nudge=null;
  const touch=matchMedia('(pointer: coarse)').matches;
  const keys=new Set();
@@ -31,7 +31,7 @@ register('survivors',{create(scene,config,onComplete){
  text(275,682,touch?'按住场地拖动移动 · 自动攻击 · 点右侧按钮躲藏':'WASD / 方向键移动 · 自动攻击 · 草丛中按住空格躲藏',touch?15:13,'#8caaa0').setOrigin(0,.5);
  const hideButton=scene.add.rectangle(1090,645,touch?280:222,touch?84:48,0x294c42).setStrokeStyle(1,0x699b7e).setInteractive({useHandCursor:true});
  const hideLabel=text(1090,touch?645:657,touch?'躲藏：关闭':'躲藏：关闭  [空格]',touch?18:15,'#c7e6c8').setOrigin(.5);
- hideButton.on('pointerdown',()=>{if(['wave','boss'].includes(run.mode))hideToggle=!hideToggle;});
+ hideButton.on('pointerdown',()=>{if(['wave','boss'].includes(run.mode)){hideToggle=!hideToggle;window.playGameSfx?.('select');}});
 
  function cardButton(container,x,y,w,h,label,action){
   const shape=scene.add.rectangle(x,y,w,h,0x315d4e).setStrokeStyle(1,0x92b59c).setInteractive({useHandCursor:true});
@@ -39,15 +39,15 @@ register('survivors',{create(scene,config,onComplete){
   shape.on('pointerover',()=>shape.setFillStyle(0x477860));shape.on('pointerout',()=>shape.setFillStyle(0x315d4e));shape.on('pointerdown',action);
   container.add([shape,labelText]);
  }
- function begin(){if(run.mode==='ready'){keys.clear();run.start();}}
- function pick(index){if(run.mode==='choice'&&run.offers[index]){run.choose(run.offers[index].id);keys.clear();hideToggle=false;}}
- function retry(){run=new SurvivorRun();run.start();keys.clear();hideToggle=false;pointerTarget=null;nudge=null;}
+ function begin(){if(run.mode==='ready'){window.playGameSfx?.('select');keys.clear();run.start();}}
+ function pick(index){if(run.mode==='choice'&&run.offers[index]){window.playGameSfx?.('confirm');run.choose(run.offers[index].id);keys.clear();hideToggle=false;}}
+ function retry(){window.playGameSfx?.('select');run=new SurvivorRun();run.start();keys.clear();hideToggle=false;pointerTarget=null;nudge=null;}
  function complete(){if(finished||run.mode!=='won')return;finished=true;onComplete({success:true,score:run.kills,flags:{nightGardenCleared:true,nightGardenItems:[...run.items]}});}
  function showOverlay(){
   overlay?.destroy(true);overlay=null;
   if(['wave','boss'].includes(run.mode))return;
   overlay=scene.add.container(0,0).setDepth(20);
-  const shade=scene.add.rectangle(640,390,1280,660,0x081317,.88).setInteractive();overlay.add(shade);
+  const shade=scene.add.rectangle(640,360,1280,720,0x081317,.88).setInteractive();overlay.add(shade);
   if(run.mode==='choice'){
    overlay.add(text(640,185,`第 ${run.wave} 轮完成 · 选一件随身之物`,30,'#f3dfb4').setOrigin(.5));
    overlay.add(text(640,231,run.items.length===2?'最后一次选择，然后面对「长夜守望者」。':'战斗已暂停。选择后恢复少量生命，进入下一波。',16).setOrigin(.5));
@@ -66,10 +66,12 @@ register('survivors',{create(scene,config,onComplete){
    overlay.add(text(640,358,'移动即可自动攻击，击败阴影拾取微光回血。\n进入绿色草丛后按住空格：停止攻击、甩开追踪并回血。\n屏息耗尽需松开恢复；石墙挡飞弹，躲藏不能免疫伤害。\n触屏：按住场地拖动移动，点击右下按钮切换躲藏。',18).setOrigin(.5).setAlign('center'));
    cardButton(overlay,640,505,310,62,touch?'点击踏入夜庭':'踏入夜庭  /  空格',begin);
   }else if(run.mode==='lost'){
+   onAchievement?.('night-fear');
    overlay.add(text(640,265,'微光暂时熄灭了',38,'#edc8bd').setOrigin(.5));
    overlay.add(text(640,342,`击退 ${run.kills} 个阴影 · 收集 ${run.items.length} 件道具\n试着借助草丛恢复，再绕到石墙后躲避弹幕。`,19).setOrigin(.5).setAlign('center'));
    cardButton(overlay,640,450,290,58,'重新挑战  /  R',retry);
   }else{
+   if(run.mode==='won'&&run.damageTaken===0)onAchievement?.('night-flawless');
    overlay.add(text(640,260,'长夜散去，微光仍在',38,'#f5dfa9').setOrigin(.5));
    overlay.add(text(640,334,`三轮历练完成 · 击退 ${run.kills} 个阴影\n${run.items.map(id=>ITEMS.find(i=>i.id===id).name).join('  ·  ')}`,18).setOrigin(.5).setAlign('center'));
    cardButton(overlay,640,455,330,62,touch?'点击继续故事':'继续这段故事  /  空格',complete);

@@ -28,6 +28,7 @@ export function mountStoryTree(element,{manager,scenes,story,onSelect,onClose}){
   function appendNode(parent,node){
    const button=document.createElement('button');
    button.className=`story-tree-node unlocked ${node.id===archive.lastNodeId?'current':''}`;
+   button.dataset.sfx='select';
    button.dataset.nodeId=node.id;
    const label=nodeLabel(node);
    button.textContent=label;
