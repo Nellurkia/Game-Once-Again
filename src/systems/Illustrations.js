@@ -4,7 +4,10 @@ export function narrativeIllustration(key,index,state){
  const revisit=state.playthrough!==1;
  const sequences={
   prologue:['shot1-console-found.jpg','shot3-press-button.png'],
-  p1_03:['C7-morning-asleep.png'],p1_04:['T7-chapter-card.png'],p1_05_pre:['T7-chapter-card.png'],p1_05_post:['T6-stairwell-console.png'],
+  p1_03:['C7-morning-asleep.png'],
+  p1_04:['T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T16-teen-classroom-bullying.png','T16-teen-classroom-bullying.png','T16-teen-classroom-bullying.png','T16-teen-classroom-bullying.png','T17-teen-scattered-drawings.png','T18-teen-friend-helps.png','T18-teen-friend-helps.png','T17-teen-scattered-drawings.png','T17-teen-scattered-drawings.png'],
+  p1_05_pre:['T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T15-teen-sketchbook-classroom.png','T19-teen-hallway-goodbye.png','T19-teen-hallway-goodbye.png','T19-teen-hallway-goodbye.png','T19-teen-hallway-goodbye.png','T19-teen-hallway-goodbye.png','T14-teen-console-stairs.png'],
+  p1_05_post:['T19-teen-hallway-goodbye.png'],
   p1_06:['Y1-rental-night.png','Y4-door-hesitation.png'],p1_07:['Y6-empty-platform.png'],
   p1_08:['A5-empty-child-room.png'],p1_09:['A5-empty-child-room.png'],p1_10:['A5-empty-child-room.png'],p1_11:['A5-empty-child-room.png'],p1_12_pre:['A5-empty-child-room.png'],p1_12_post:['Y6-empty-platform.png'],
   p2_01:['C1-bedroom-night.png'],p2_03:['NG1-mother-enters.png'],p2_04:['T7-chapter-card.png'],p2_05_pre:['T6-stairwell-console.png'],p2_05_post:['T13-minigame-week2.png'],
