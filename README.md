@@ -28,11 +28,11 @@ npm run dev
 
 ## Background music
 
-The supplied `mondamusic-game-game-music-529603(1).mp3` is stored as `public/assets/audio/bgm_default.mp3` and currently plays in all scenes.
+The supplied `mondamusic-game-game-music-529603(1).mp3` remains the title/default track. The five additional tracks are assigned in `public/data/music.json`: `躲藏游戏机` for the prologue, `吃豆人？` for Chapter 1, `夜庭` for Chapter 2, `收拾东西站台` for Chapter 3, and `回忆拼图平板跳跃 截取` for Chapter 4.
 
 Edit `public/data/music.json` to assign music by scene. `default` is the fallback track; a `null` scene entry uses that default. Paths are relative to `public/` and work when hosted under a subdirectory, such as `/once-again/`.
 
-To add chapter music later, place the new MP3 in `public/assets/audio/`, then change the corresponding entry, for example:
+To replace chapter music, place the new MP3 in `public/assets/audio/` and change the corresponding entry, for example:
 
 ```json
 "ch1": "assets/audio/bgm_ch1_childhood.mp3"
