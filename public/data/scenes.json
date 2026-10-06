@@ -12,15 +12,12 @@
   {
     "id": "ch1",
     "title": "第一幕 · 童年",
-    "subtitle": "那条回家的路",
+    "subtitle": "数字勇者",
     "age": "1986 · 童年",
-    "minigame": "pacman",
-    "asset": "ch1_bg",
+    "minigame": "numberHero",
     "week1": {
-      "goal": "return_room",
-      "ghostColor": "#c56e78",
       "dialogueKey": "ch1_w1",
-      "label": "收集记忆碎片，回到自己的房间",
+      "label": "击败挡路的数字，带着这一周目的力量攀上山顶",
       "dialogueKeys": [
         "ch1_w1"
       ],
@@ -29,11 +26,8 @@
       ]
     },
     "week2": {
-      "goal": "parents_room",
-      "powerPellet": true,
-      "ghostColor": "#9ebbaa",
       "dialogueKey": "ch1_w2",
-      "label": "这一次，走向父母的房间",
+      "label": "取得勇气之剑，增长力量，直面山顶的那一晚",
       "dialogueKeys": [
         "p2_01",
         "ch1_w2"
