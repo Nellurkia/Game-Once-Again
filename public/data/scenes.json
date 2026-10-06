@@ -63,16 +63,16 @@
  {
   "id": "ch4",
   "title": "第四幕 · 老年",
-  "subtitle": "把旧时光放回去",
+  "subtitle": "拾光",
   "age": "暮年 · 回望",
-  "minigame": "memoryPuzzle",
+  "minigame": "shiguang",
   "week1": {
    "dialogueKey": "ch4_w1",
-   "label": "拾起记忆，拼回道路，带着钥匙抵达出口"
+   "label": "拼回通路，带着残缺的记忆抵达出口"
   },
   "week2": {
    "dialogueKey": "ch4_w2",
-   "label": "补全每一块记忆，再打开最后的门"
+   "label": "补齐全部十四块拼图，再打开最后的门"
   }
  },
  {
