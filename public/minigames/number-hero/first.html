@@ -1018,7 +1018,7 @@ window.NumberHero={
   if(saved?.kind==='number-hero-v1'&&saved.playthrough===1&&Number.isFinite(saved.power)&&saved.power>=START_PWR&&Number.isFinite(saved.position?.x)&&Number.isFinite(saved.position?.z)){
    ST.pwr=saved.power;player.position.x=Math.max(-46,Math.min(46,saved.position.x));player.position.z=Math.max(-46,Math.min(46,saved.position.z));yaw=Number.isFinite(saved.position.yaw)?saved.position.yaw:yaw;player.targetY=groundY(player.position.x,player.position.z);
    for(const item of saved.monsters||[]){const m=ST.mons.find(m=>m.id===item.id);if(!m)continue;m.dead=!!item.dead;m.num=Number.isFinite(item.num)?Math.max(m.baseNum,item.num):m.baseNum;m.group.visible=!m.dead||m.isBoss;m.sprite.visible=!m.dead;drawNum(m.sprite,m.num);}
-   
+
    ST.ended=!!saved.ended;if(ST.ended){ST.phase='over';controls.begin();ST.boss.dead?winEnd():failEnd();}
   }
   player.position.y=player.targetY;$pnum.textContent=ST.pwr;updateCam(0,true);
