@@ -21,7 +21,9 @@ export class GameManager {
   if(id!=='ending:BE'&&storyNodeId(snapshot)!==id)return false;
   if(node.ending&&snapshot.flags.ending!==node.ending)return false;
   if(node.outcome&&snapshot.flags.youthOutcome!==node.outcome)return false;
+  const firstJourneyComplete=this.state.flags.firstJourneyComplete||this.state.playthrough===2||Object.keys(this.state.storyTrees?.[2]?.nodes||{}).length>0;
   Object.assign(this.state,JSON.parse(JSON.stringify(snapshot)));
+  if(firstJourneyComplete)this.state.flags.firstJourneyComplete=true;
   this.state.storyTrees[playthrough].lastNodeId=id;this.persist();return true;
  }
  setFlag(k,v){this.state.flags[k]=v;this.persist();}
