@@ -218,6 +218,7 @@ let chestSeq = null;
 let bossSeq = null;
 let fadeAmt = 0;
 let ngCleared = false, ngpCleared = false;
+let heroOutcome = null;
 let chestOpened = false;
 
 const keys = {};
@@ -399,6 +400,7 @@ function startRun(which){
   if(hostOptions)try{window.parent.playGameSfx?.('select');}catch{}
   if(hostOptions)which=hostOptions.playthrough===1?'NG':'NGP';
   heroStopHits=0;heroStopTrackingKnown=true;
+  heroOutcome=null;
   run = which;
   R = RUNS[which];
   P = { x: 0, y: 0, num: R.startNum, sword: false, popT: 0 };
@@ -566,6 +568,11 @@ function resolveClash(){
   }else{
     SFX.fail();
     shake(14); flash(0.5);
+    if(run === 'NGP' && e.id === 'knot'){
+      clash = null;
+      endNGPMissed();
+      return;
+    }
     e.hit = false;
     P.y = Math.max(0, P.y - 10);
     float(P.x, P.y + PH + 2.6, '数字不够', '#ff6b6b', 1.3);
@@ -1562,7 +1569,7 @@ function endNG(){
 
 function endNGP(){
   if(state === 'ended') return;
-  state = 'ended';awardHeroForward();reportHeroProgress();
+  state = 'ended';heroOutcome='VICTORY';awardHeroForward();reportHeroProgress();
   ngpCleared = true;
 
   const me = Math.round(P.num);
@@ -1600,6 +1607,28 @@ function endNGP(){
   buildMenu();
 }
 
+function endNGPMissed(){
+  if(state === 'ended') return;
+  state='ended';heroOutcome='INSUFFICIENT';awardHeroForward();reportHeroProgress();
+  $modal.innerHTML=`
+    <div class="box">
+      <h1>数 字 不 够</h1>
+      <div class="bd">
+        你来到了最后一只怪物面前。<br><br>
+        这一次的数字还不够。<br>
+        但你仍然可以带着这段经历继续向前。
+      </div>
+      <div class="acts">
+        <button class="btn am" id="b1">再 试 一 次</button>
+        <button class="btn" id="b2">继续故事</button>
+      </div>
+    </div>`;
+  $modal.classList.add('on');
+  setTimeout(()=>beep(220,.18,'triangle',.05),180);
+  document.getElementById('b1').onclick=()=>startRun('NGP');
+  document.getElementById('b2').onclick=()=>finishHeroChapter('INSUFFICIENT');
+}
+
 /* ══════════════════════════════════════════════════════
    标题菜单
    ══════════════════════════════════════════════════════ */
@@ -1627,9 +1656,9 @@ const $pauseScreen=document.getElementById('pauseScreen');
 const $pauseBtn=document.getElementById('pauseBtn');
 function clearHeroInput(){for(const key of Object.keys(keys))keys[key]=false;mActive=false;}
 function setManualPause(value){manualPaused=!!value;clearHeroInput();$pauseScreen?.classList.toggle('on',manualPaused&&!hostPaused);if($pauseBtn)$pauseBtn.textContent=manualPaused?'继续攀登 · P':'暂停 · P';}
-function heroSnapshot(){return {kind:'number-hero-climb-v2',playthrough:run==='NG'?1:2,power:Math.round(P?.num||R.startNum),position:{x:P?.x||0,y:P?.y||0},entities:ents.map(e=>({dead:!!e.dead,hit:!!e.hit})),ended:state==='ended',sword:!!P?.sword,chestOpened,stopHits:heroStopHits,stopTrackingKnown:heroStopTrackingKnown};}
+function heroSnapshot(){return {kind:'number-hero-climb-v2',playthrough:run==='NG'?1:2,power:Math.round(P?.num||R.startNum),position:{x:P?.x||0,y:P?.y||0},entities:ents.map(e=>({dead:!!e.dead,hit:!!e.hit})),ended:state==='ended',outcome:heroOutcome,sword:!!P?.sword,chestOpened,stopHits:heroStopHits,stopTrackingKnown:heroStopTrackingKnown};}
 function reportHeroProgress(){if(hostOptions?.onProgress&&state!=='title')hostOptions.onProgress(heroSnapshot());}
-function finishHeroChapter(outcome){if(chapterDelivered)return;chapterDelivered=true;awardHeroForward();reportHeroProgress();hostOptions?.onComplete?.({success:true,score:Math.round(P?.num||0),flags:{numberHeroComplete:true,numberHeroSword:!!P?.sword,numberHeroOutcome:outcome}});}
+function finishHeroChapter(outcome){if(chapterDelivered)return;chapterDelivered=true;awardHeroForward();reportHeroProgress();hostOptions?.onComplete?.({success:outcome==='VICTORY',score:Math.round(P?.num||0),flags:{numberHeroComplete:true,numberHeroSword:!!P?.sword,numberHeroOutcome:outcome}});}
 function restoreHero(snapshot){
  if(snapshot?.kind!=='number-hero-climb-v2'||snapshot.playthrough!==(hostOptions.playthrough===1?1:2)||!Number.isFinite(snapshot.power)||!Number.isFinite(snapshot.position?.y))return false;
  const which=hostOptions.playthrough===1?'NG':'NGP';run=which;R=RUNS[which];P={x:Math.max(-X_LIMIT,Math.min(X_LIMIT,Number(snapshot.position.x)||0)),y:Math.max(0,Number(snapshot.position.y)||0),num:snapshot.power,sword:!!snapshot.sword,popT:0};
@@ -1638,7 +1667,7 @@ function restoreHero(snapshot){
  heroStopHits=Number.isInteger(snapshot.stopHits)&&snapshot.stopHits>=0?snapshot.stopHits:ents.filter(e=>e.kind==='later'&&(e.dead||e.hit)).length;
  chestOpened=!!snapshot.chestOpened;camY=P.y;parts=[];floats=[];state='run';stateT=0;T=0;clash=null;stunLeft=0;chestSeq=null;bossSeq=null;fadeAmt=0;shakeAmt=0;flashAmt=0;
  document.getElementById('menu').classList.add('off');$modal.classList.remove('on');syncHUD();syncTrack();
- if(snapshot.ended){state='run';if(which==='NG')endNG();else endNGP();}
+ if(snapshot.ended){state='run';if(which==='NG')endNG();else if(snapshot.outcome==='INSUFFICIENT')endNGPMissed();else endNGP();}
  return true;
 }
 function startHostGame(options={}){
