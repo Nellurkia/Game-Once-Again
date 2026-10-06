@@ -32,7 +32,7 @@ h1{font-size:84px}
 .title-shade{z-index:-1;background:linear-gradient(180deg,#20191029 0%,transparent 25%,transparent 74%,#24181030 100%);pointer-events:none}
 .title-wordmark{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:9px;color:#fff0cc;text-shadow:0 2px 2px #432a18,0 4px 14px #28170fd9;pointer-events:none}
 .title-wordmark>span{font:800 64px/1.3 'Noto Serif SC',serif;letter-spacing:10px;white-space:nowrap}
-.title-wordmark small{font:11px Georgia,serif;letter-spacing:3px;color:#ffe4b5}
+.title-wordmark small{font:13px Georgia,serif;letter-spacing:3px;color:#ffe4b5}.title-wordmark strong{font:500 14px/1.4 "Noto Serif SC",serif;letter-spacing:2px;color:#fff0d4}.title-wordmark strong i{font:italic 12px Georgia,serif;letter-spacing:1.5px;color:#ffe4b5}
 /* Menu slots measured on the 1672 x 941 artwork, mapped to the 1280 x 720 stage. */
 .console-menu{position:absolute;left:532px;top:391px;width:210px;height:71px;z-index:2}
 .console-menu button{position:absolute;left:0;top:0;width:100%;height:22px;padding:0 3px;display:flex;align-items:center;justify-content:center;border:0;border-radius:2px;background:transparent;color:#4c301d;font:600 12px/1 'Noto Serif SC',serif;letter-spacing:1px;text-shadow:0 1px #fff1bf;cursor:pointer}
@@ -230,3 +230,6 @@ body.mobile-portrait #orientation-hint{display:flex}
  .dialogue-actions button{min-width:124px;min-height:76px;padding:10px 14px;font-size:14px}
  .survivor-scene .dpad{display:none}
 }
+
+/* Production credits */
+dialog.staff-modal{width:min(620px,92vw);max-height:86vh;overflow-y:auto;padding:34px 42px}.production-credits{width:100%;text-align:left}.production-credits .production-title{color:#e8d6bc;font-size:13px;letter-spacing:.4px}.production-credits section{border-top:1px solid #ffffff18;padding:9px 0 5px}.production-credits h3{margin:0;color:#d9c69f;font-size:12px;letter-spacing:1px}.production-credits p{margin:6px 0 0;color:#c3c3cc;font-size:12px;line-height:1.7;letter-spacing:0;overflow-wrap:anywhere}.production-credits a{color:#cdb9de;text-decoration:underline;text-underline-offset:3px}.credits.center-scene{gap:0;padding:16px}.credits.center-scene h2{margin:10px 0;font-size:30px}.credits.center-scene .production-credits{width:min(740px,94%);max-height:35%;overflow-y:auto;padding:8px 20px;background:#101824c9;border:1px solid #ffffff22;border-radius:8px}.credits.center-scene .production-title{text-align:center;font-size:11px}.credits.center-scene .production-credits section{padding:6px 0 3px}.credits.center-scene .production-credits h3{font-size:10px}.credits.center-scene .production-credits p{font-size:10px;line-height:1.5;margin-top:3px}.credits.center-scene .ending-badge{margin:7px 0;padding:8px 14px}.credits.center-scene .primary{margin-top:10px}
