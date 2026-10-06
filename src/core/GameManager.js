@@ -1,6 +1,7 @@
 import {defaults} from './GameSave.js';
 import {emptyStoryTrees,storyNodeId,storySnapshot,migrateStoryTrees,buildStoryTree} from './StoryTree.js';
 import {migrateChapterThree} from './ChapterContent.js';
+import {migrateStoryContent} from './StoryContent.js';
 export class GameManager {
  constructor(save){this.save=save;this.state=save.load()||defaults();this.events=new Map();}
  on(event,cb){if(!this.events.has(event))this.events.set(event,new Set());this.events.get(event).add(cb);return ()=>this.events.get(event).delete(cb);}
@@ -10,7 +11,7 @@ export class GameManager {
  saveMinigameProgress(id,snapshot){this.state.minigameSaves??={};this.state.minigameSaves[`${id}:${this.state.playthrough}`]=snapshot;this.rememberStoryNode();return this.persist();}
  clearSavedGame(){const settings=this.state.settings;this.save.reset();this.state={...defaults(),settings};}
  startNewGame(){this.clearSavedGame();this.persist();}
- initializeStoryTrees(scenes,story){this.storyDefinitions={scenes,story};const treeChanged=migrateStoryTrees(this.state,scenes,story),chapterChanged=migrateChapterThree(this.state,scenes);if((treeChanged||chapterChanged)&&this.save.load())this.persist();}
+ initializeStoryTrees(scenes,story){this.storyDefinitions={scenes,story};const treeChanged=migrateStoryTrees(this.state,scenes,story),chapterChanged=migrateChapterThree(this.state,scenes),storyChanged=migrateStoryContent(this.state,scenes,story);if((treeChanged||chapterChanged||storyChanged)&&this.save.load())this.persist();}
  rememberStoryNode(id=storyNodeId(this.state)){if(!id)return;this.state.storyTrees??=emptyStoryTrees();const tree=this.state.storyTrees[this.state.playthrough];tree.nodes[id]=storySnapshot(this.state);tree.lastNodeId=id;}
  restoreStoryNode(playthrough,id){
   if(![1,2].includes(playthrough)||!this.storyDefinitions)return false;
@@ -31,5 +32,5 @@ export class GameManager {
  saveGameplayPosition(){this.state.sceneProgress={scene:this.state.scene,kind:'game'};this.rememberStoryNode();this.persist();}
  advanceChapter(){if(this.state.chapterIndex<3){this.state.chapterIndex++;this.go('ch'+(this.state.chapterIndex+1));}else this.go(this.state.playthrough===1?'interlude':'ending_select');return this.state.scene;}
  secondRun(){this.state.playthrough=2;this.state.chapterIndex=0;this.go('ch1');}
- ending(id){if(!this.state.unlockedEndings.includes(id))this.state.unlockedEndings.push(id);this.state.flags.ending=id;if(id==='BE'){this.secondRun();this.rememberStoryNode('ending:BE');this.persist();}else this.go('ending');}
+ ending(id){if(!this.state.unlockedEndings.includes(id))this.state.unlockedEndings.push(id);this.state.flags.ending=id;this.state.scene='ending';this.state.sceneProgress=null;this.state.chapterIndex=3;this.persist();}
 }

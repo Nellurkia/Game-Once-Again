@@ -31,7 +31,7 @@
 
 结果标记：`departureComplete`、`youthOutcome`、`youthLeftHome`、`youthRepliedToA`、`youthCarriedNotebook`、`youthVisitedStore`、`youthHesitationPeak`、`youthRoute`。
 
-剧情文本：`ch3_departure_w1/w2` 为入场；`ch3_departure_missed/late/success` 为尾声。非一周目剧情树的成功与保留迟到结果分支分别记录，第四幕在两条分支之后汇合。
+剧情文本：`ch3_departure_w1/w2` 为入场；一周目错过后接剧本场景 P1-07。非一周目成功后接 P2-07 至 P2-13，迟到则显示简短可重试提示；随后进入第四幕。
 
 ## 美术与音频
 

@@ -1,97 +1,181 @@
 [
- {
-  "id": "boot"
- },
- {
-  "id": "title"
- },
- {
-  "id": "prologue",
-  "title": "序章 · 暮色中的房间"
- },
- {
-  "id": "ch1",
-  "title": "第一幕 · 童年",
-  "subtitle": "那条回家的路",
-  "age": "1986 · 童年",
-  "minigame": "pacman",
-  "asset": "ch1_bg",
-  "week1": {
-   "goal": "return_room",
-   "ghostColor": "#c56e78",
-   "dialogueKey": "ch1_w1",
-   "label": "收集记忆碎片，回到自己的房间"
+  {
+    "id": "boot"
   },
-  "week2": {
-   "goal": "parents_room",
-   "powerPellet": true,
-   "ghostColor": "#9ebbaa",
-   "dialogueKey": "ch1_w2",
-   "label": "这一次，走向父母的房间"
+  {
+    "id": "title"
+  },
+  {
+    "id": "prologue",
+    "title": "序章 · 暮色中的房间"
+  },
+  {
+    "id": "ch1",
+    "title": "第一幕 · 童年",
+    "subtitle": "那条回家的路",
+    "age": "1986 · 童年",
+    "minigame": "pacman",
+    "asset": "ch1_bg",
+    "week1": {
+      "goal": "return_room",
+      "ghostColor": "#c56e78",
+      "dialogueKey": "ch1_w1",
+      "label": "收集记忆碎片，回到自己的房间",
+      "dialogueKeys": [
+        "ch1_w1"
+      ],
+      "postGameKeys": [
+        "p1_03"
+      ]
+    },
+    "week2": {
+      "goal": "parents_room",
+      "powerPellet": true,
+      "ghostColor": "#9ebbaa",
+      "dialogueKey": "ch1_w2",
+      "label": "这一次，走向父母的房间",
+      "dialogueKeys": [
+        "p2_01",
+        "ch1_w2"
+      ],
+      "postGameKeys": [
+        "p2_03"
+      ]
+    }
+  },
+  {
+    "id": "ch2",
+    "title": "第二幕 · 少年",
+    "subtitle": "没说出口的话",
+    "age": "1996 · 少年",
+    "minigame": "survivors",
+    "week1": {
+      "dialogueKey": "ch2_w1",
+      "label": "穿过夜庭的怪潮，在躲藏与反击间守住微光",
+      "dialogueKeys": [
+        "p1_04",
+        "p1_05_pre"
+      ],
+      "postGameKeys": [
+        "p1_05_post"
+      ]
+    },
+    "week2": {
+      "dialogueKey": "ch2_w2",
+      "label": "带着三件随身之物，直面长夜守望者",
+      "dialogueKeys": [
+        "p2_04",
+        "p2_05_pre"
+      ],
+      "postGameKeys": [
+        "p2_05_post"
+      ]
+    }
+  },
+  {
+    "id": "ch3",
+    "title": "第三幕 · 青年",
+    "subtitle": "出门之前",
+    "age": "青年 · 出发的那一天",
+    "minigame": "beforeDeparture",
+    "week1": {
+      "dialogueKey": "ch3_departure_w1",
+      "label": "看清准备与等待的代价，重访错过 A 的那一天",
+      "dialogueKeys": [
+        "ch3_departure_w1"
+      ],
+      "postGameKeys": [
+        "p1_07"
+      ]
+    },
+    "week2": {
+      "dialogueKey": "ch3_departure_w2",
+      "label": "19:00 前离开住所，19:30 前走到 A 的身边",
+      "dialogueKeys": [
+        "ch3_departure_w2"
+      ],
+      "postGameKeys": []
+    },
+    "postGameKeysByOutcome": {
+      "SUCCESS_AT_STATION": [
+        "p2_07",
+        "p2_08",
+        "p2_09",
+        "p2_10",
+        "p2_11",
+        "p2_12",
+        "p2_13"
+      ],
+      "FAILED_LATE": [
+        "p2_departure_late"
+      ]
+    }
+  },
+  {
+    "id": "ch4",
+    "title": "第四幕 · 老年",
+    "subtitle": "拾光",
+    "age": "暮年 · 回望",
+    "minigame": "shiguang",
+    "week1": {
+      "dialogueKey": "ch4_w1",
+      "label": "拼回通路，带着残缺的记忆抵达出口",
+      "dialogueKeys": [
+        "p1_08",
+        "p1_09",
+        "p1_10",
+        "p1_11",
+        "p1_12_pre"
+      ],
+      "postGameKeys": [
+        "p1_12_post",
+        "p1_13",
+        "p1_14"
+      ]
+    },
+    "week2": {
+      "dialogueKey": "ch4_w2",
+      "label": "补齐全部十四块拼图，再打开最后的门",
+      "dialogueKeys": [
+        "p2_14"
+      ],
+      "postGameKeys": [
+        "p2_15",
+        "p2_16",
+        "p2_17",
+        "p2_18"
+      ]
+    }
+  },
+  {
+    "id": "interlude",
+    "title": "幕间 · 再一次的机会"
+  },
+  {
+    "id": "ending_select",
+    "title": "终幕 · 你的选择"
+  },
+  {
+    "id": "ending",
+    "sequences": {
+      "BE": [
+        "E-B-01",
+        "E-B-02",
+        "E-B-03"
+      ],
+      "NE": [
+        "E-A-01",
+        "E-A-02",
+        "E-A-03"
+      ],
+      "TE": [
+        "E-T-01",
+        "E-T-02",
+        "E-T-03"
+      ]
+    }
+  },
+  {
+    "id": "credits"
   }
- },
- {
-  "id": "ch2",
-  "title": "第二幕 · 少年",
-  "subtitle": "没说出口的话",
-  "age": "1996 · 少年",
-  "minigame": "survivors",
-  "week1": {
-   "dialogueKey": "ch2_w1",
-   "label": "穿过夜庭的怪潮，在躲藏与反击间守住微光"
-  },
-  "week2": {
-   "dialogueKey": "ch2_w2",
-   "label": "带着三件随身之物，直面长夜守望者"
-  }
- },
- {
-  "id": "ch3",
-  "title": "第三幕 · 青年",
-  "subtitle": "出门之前",
-  "age": "青年 · 出发的那一天",
-  "minigame": "beforeDeparture",
-  "week1": {
-   "dialogueKey": "ch3_departure_w1",
-   "label": "看清准备与等待的代价，重访错过 A 的那一天"
-  },
-  "week2": {
-   "dialogueKey": "ch3_departure_w2",
-   "label": "19:00 前离开住所，19:30 前走到 A 的身边"
-  },
-  "outroKeys": {
-   "MISSED": "ch3_departure_missed",
-   "FAILED_LATE": "ch3_departure_late",
-   "SUCCESS_AT_STATION": "ch3_departure_success"
-  }
- },
- {
-  "id": "ch4",
-  "title": "第四幕 · 老年",
-  "subtitle": "拾光",
-  "age": "暮年 · 回望",
-  "minigame": "shiguang",
-  "week1": {
-   "dialogueKey": "ch4_w1",
-   "label": "拼回通路，带着残缺的记忆抵达出口"
-  },
-  "week2": {
-   "dialogueKey": "ch4_w2",
-   "label": "补齐全部十四块拼图，再打开最后的门"
-  }
- },
- {
-  "id": "interlude",
-  "title": "幕间 · 再一次的机会"
- },
- {
-  "id": "ending_select",
-  "title": "终幕 · 你的选择"
- },
- {
-  "id": "ending"
- },
- {
-  "id": "credits"
- }
 ]

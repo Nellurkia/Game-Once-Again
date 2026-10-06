@@ -1,4 +1,4 @@
-export const CHAPTER_THREE_VERSION='before-departure-v1';
+export const CHAPTER_THREE_VERSION='before-departure-screenplay-v2';
 // A replacement game must never interpret the former childhood checkpoint.
 export function migrateChapterThree(state,scenes){
  if(state.chapterContentVersions?.ch3===CHAPTER_THREE_VERSION)return false;

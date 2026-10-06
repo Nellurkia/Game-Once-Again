@@ -5,6 +5,7 @@ export function storyNodeId(state){
  if(progress?.kind==='dialogue')return `${state.scene}:dialogue:${progress.storyKey}:${progress.index}`;
  if(progress?.kind==='game')return `${state.scene}:game`;
  if(['interlude','ending_select'].includes(state.scene))return state.scene;
+ if(state.scene==='ending'&&state.sceneProgress?.kind==='ending_card')return `ending:${state.flags.ending}:card`;
  if(state.scene==='credits'&&['NE','TE'].includes(state.flags.ending))return `credits:${state.flags.ending}`;
  return null;
 }
@@ -37,33 +38,27 @@ export function buildStoryTree(scenes,story,playthrough){
  for(const chapter of scenes.filter(scene=>scene.minigame)){
   const config=chapter[playthrough===1?'week1':'week2'];
   const target=group(chapter.id,chapter.title,chapter.subtitle);
-  dialogue(target,chapter.id,config.dialogueKey,'入场对白');
+  for(const key of config.dialogueKeys||[config.dialogueKey])dialogue(target,chapter.id,key,'入场对白');
   add(target,{id:`${chapter.id}:game`,scene:chapter.id,sceneProgress:{scene:chapter.id,kind:'game'},title:chapter.subtitle,description:config.label,kind:'game'});
-  if(chapter.outroKeys&&playthrough===1)dialogue(target,chapter.id,chapter.outroKeys.MISSED,'原始存档 · 尾声');
-  else if(chapter.outroKeys){
+  if(chapter.postGameKeysByOutcome&&playthrough!==1){
    const fork=previous,ends=[];
-   for(const [outcome,label] of [['SUCCESS_AT_STATION','走出门'],['FAILED_LATE','留下这次的结果']]){
-    const branch={id:outcome,label,nodes:[]};target.branches.push(branch);previous=fork;
-    dialogue(branch,chapter.id,chapter.outroKeys[outcome],label);
+   for(const [outcome,keys] of Object.entries(chapter.postGameKeysByOutcome)){
+    const branch={id:outcome,label:outcome==='SUCCESS_AT_STATION'?'赶上列车': '仍然错过',nodes:[]};target.branches.push(branch);previous=fork;
+    for(const key of keys)dialogue(branch,chapter.id,key,'游戏之后');
     branch.nodes.forEach(node=>node.outcome=outcome);ends.push(previous);
    }
    previous=ends;
-  }else dialogue(target,chapter.id,'outro','章节尾声');
+  }else for(const key of config.postGameKeys||[])dialogue(target,chapter.id,key,'游戏之后');
  }
- if(playthrough===1){
-  add(group('interlude','幕间','再一次的机会'),{id:'interlude',scene:'interlude',sceneProgress:null,title:'再来一次',description:'走完四段人生，开启另一棵剧情树。',kind:'checkpoint'});
- }else{
+ if(playthrough!==1){
   const target=group('endings','终幕','这一次，你想留下些什么？');
   add(target,{id:'ending_select',scene:'ending_select',sceneProgress:null,title:'最后的存档',description:'留下、和解，或再走一次。',kind:'checkpoint'});
   const fork=previous;
-  for(const [ending,title] of [['NE','珍惜此刻的人生'],['TE','接纳最初的自己'],['BE','未完的循环']]){
+  for(const [ending,title] of [['BE','Bad Ending · 再来一次'],['NE','Another Ending · 留下'],['TE','True Ending · 还没结束']]){
    const branch={id:ending,title,nodes:[]};target.branches.push(branch);previous=fork;
-   if(ending==='BE')add(branch,{id:'ending:BE',scene:'ch1',sceneProgress:null,ending,title:'再试一次，也许……',description:'重新走进非一周目的回忆。',kind:'ending'});
-   else{
-    dialogue(branch,'ending',ending,title);
-    branch.nodes.forEach(node=>node.ending=ending);
-    add(branch,{id:`credits:${ending}`,scene:'credits',sceneProgress:null,ending,title:'旅程的落款',description:'这份人生，已经留下了答案。',kind:'checkpoint'});
-   }
+  for(const key of story.endingSequences?.[ending]||[])dialogue(branch,'ending',key,title);
+   add(branch,{id:`ending:${ending}:card`,scene:'ending',sceneProgress:{scene:'ending',kind:'ending_card'},ending,title:`结局字幕 · ${title}`,description:'演出结束，回到标题。',kind:'ending'});
+   branch.nodes.forEach(node=>node.ending=ending);
   }
  }
  return {groups,nodes};
@@ -79,6 +74,7 @@ export function migrateStoryTrees(state,scenes,story){
   const main=nodes.filter(node=>!node.ending&&!node.outcome);
   let reached=-1;
   if(playthrough<state.playthrough)reached=main.length-1;
+  else if(playthrough===1&&state.scene==='interlude')reached=main.length-1;
   else{
    reached=main.findIndex(node=>node.id===storyNodeId(state));
    if(reached<0&&['ending','credits'].includes(state.scene))reached=main.length-1;

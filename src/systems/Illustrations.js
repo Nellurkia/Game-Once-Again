@@ -4,6 +4,14 @@ export function narrativeIllustration(key,index,state){
  const revisit=state.playthrough!==1;
  const sequences={
   prologue:['shot1-console-found.jpg','shot3-press-button.png'],
+  p1_03:['C7-morning-asleep.png'],p1_04:['T7-chapter-card.png'],p1_05_pre:['T7-chapter-card.png'],p1_05_post:['T6-stairwell-console.png'],
+  p1_06:['Y1-rental-night.png','Y4-door-hesitation.png'],p1_07:['Y6-empty-platform.png'],
+  p1_08:['A5-empty-child-room.png'],p1_09:['A5-empty-child-room.png'],p1_10:['A5-empty-child-room.png'],p1_11:['A5-empty-child-room.png'],p1_12_pre:['A5-empty-child-room.png'],p1_12_post:['Y6-empty-platform.png'],
+  p2_01:['C1-bedroom-night.png'],p2_03:['NG1-mother-enters.png'],p2_04:['T7-chapter-card.png'],p2_05_pre:['T6-stairwell-console.png'],p2_05_post:['T13-minigame-week2.png'],
+  p2_07:['Y11-ng-platform-reunion.png'],p2_08:['Y12-ng-side-by-side.png'],p2_09:['A5-empty-child-room.png'],p2_10:['A5-empty-child-room.png'],p2_11:['A5-empty-child-room.png'],p2_12:['Y12-ng-side-by-side.png'],p2_13:['Y12-ng-side-by-side.png'],p2_14:['Y1-rental-night.png'],p2_15:['C7-morning-asleep.png'],p2_16:['Y6-empty-platform.png'],p2_17:['Y12-ng-side-by-side.png'],p2_18:['Y1-rental-night.png'],
+  'E-B-01':['E1-save-menu.png'],'E-B-02':['C1-bedroom-night.png'],'E-B-03':['E5-phone-final.png'],
+  'E-A-01':['E3-save-current-life.png'],'E-A-02':['Y12-ng-side-by-side.png'],'E-A-03':['E3-save-current-life.png'],
+  'E-T-01':['E4-restore-save.png'],'E-T-02':['shot1-console-found.jpg'],'E-T-03':['E5-phone-final.png'],
   ch1_w1:['C1-bedroom-night.png'],ch1_w2:['C3-hand-on-door.png'],
   ch2_w1:['T6-stairwell-console.png','T7-chapter-card.png'],
   ch2_w2:['T6-stairwell-console.png','T13-minigame-week2.png'],

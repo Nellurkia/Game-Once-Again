@@ -159,5 +159,74 @@ body.mobile-portrait #orientation-hint{display:flex}
 .departure-dialog details{margin-top:19px;font-size:11px;color:#a2b4b6}
 .departure-dialog summary{cursor:pointer}
 .departure-timeline{white-space:pre-line;line-height:1.8;margin:12px 0 0;color:#b4c2c2}
+.script-ending-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:54px;background:#111a25;color:#eee2ce;overflow:hidden}
+.script-ending-card:before{content:'';position:absolute;inset:-20%;background:radial-gradient(ellipse at 50% 55%,#baa07824,transparent 50%);animation:ending-breathe 7s ease-in-out infinite alternate}
+.script-ending-card>*{position:relative;z-index:1}
+.script-ending-card .eyebrow{font-size:11px;letter-spacing:5px;color:#c9b582}
+.script-ending-card h1{font:500 42px/1.45 'Noto Serif SC',serif;letter-spacing:3px;margin:26px 0;color:#f0dfbf;animation:ending-title-in 1.4s ease both}
+.script-ending-card>p{max-width:760px;font:17px/2 'Noto Serif SC',serif;color:#d0c8b7}
+.script-ending-card .ending-loop{font:12px/2 Georgia,serif;letter-spacing:6px;color:#9f988a}
+.ending-title-change{height:50px;display:flex;align-items:center;justify-content:center;font:500 24px 'Noto Serif SC',serif;letter-spacing:7px;color:#e5d7b8}
+.ending-title-change span{grid-area:1/1}
+.ending-title-change .title-new{opacity:0;position:absolute;transform:translateY(8px)}
+.ending-title-change.revealed .title-old{animation:ending-word-out .7s ease forwards}
+.ending-title-change.revealed .title-new{animation:ending-word-in .8s ease .8s forwards}
+.script-ending-card.true:before{background:radial-gradient(ellipse at 50% 62%,#e9d9b130,transparent 57%)}
+.script-ending-card.another:before{background:radial-gradient(ellipse at 50% 60%,#ad9a7040,transparent 58%)}
+.script-ending-card.bad:before{background:radial-gradient(ellipse at 50% 54%,#8a75552b,transparent 48%);animation:ending-breathe 4s ease-in-out infinite alternate}
+.script-ending-card.bad h1{font-size:38px}
+.script-ending-card .primary{margin-top:20px;min-width:210px}
+.script-p1-14 .narrative-room,.script-p2-18 .narrative-room{transition:filter .8s,opacity .8s}
+.script-p1-14[data-script-line="7"] .narrative-room{filter:brightness(.45) saturate(.7)}
+.script-p1-14[data-script-line="8"] .narrative-room{animation:memory-return-flash 1.1s ease}
+.script-p1-14[data-script-line="11"] .narrative-room{filter:brightness(1.18) saturate(.85)}
+.script-p2-18[data-script-line="5"] .narrative-room{animation:memory-door-open 1.6s ease both}
+.script-e-b-03 .narrative-room{filter:saturate(.65);animation:loop-memory 5s ease-in-out infinite alternate}
+.script-e-a-03 .narrative-room,.script-e-t-03 .narrative-room{animation:quiet-ending-light 4s ease both}
+.script-e-t-02[data-script-line="2"] .dialogue-box{animation:save-complete 1.2s ease}
+.script-e-b-01[data-script-line="5"] .narrative-room{animation:ending-glitch .8s steps(2,end)}
+.script-e-b-01[data-script-line="7"] .narrative-room{animation:memory-to-black 1.8s ease forwards}
+.script-e-b-02 .narrative-room{transition:filter .25s,transform .25s}
+.script-e-b-02[data-script-line="3"] .narrative-room,.script-e-b-02[data-script-line="5"] .narrative-room{animation:memory-jump-cut .6s steps(2,end)}
+.script-e-b-03 .dialogue-box{animation:loop-dialogue 5s ease-in-out infinite alternate}
+.script-e-a-01 .narrative-room{transition:filter 1s,opacity 1s}
+.script-e-a-01[data-script-line="2"] .narrative-room{animation:memories-gather 2.4s ease both}
+.script-e-a-01[data-script-line="4"] .narrative-room{filter:brightness(.72) saturate(.72)}
+.script-e-a-02 .narrative-room{animation:quiet-ending-light 6s ease both}
+.script-e-a-03 .narrative-room{filter:sepia(.18)}
+.script-e-t-01[data-script-line="3"] .narrative-room{animation:memory-voice 1.3s ease both}
+.script-e-t-02 .narrative-room{transition:opacity 1s,filter 1s}
+.script-e-t-02[data-script-line="0"] .narrative-room{filter:brightness(1.55)}
+.script-e-t-02[data-script-line="6"] .dialogue-box{animation:message-send 1s ease}
+.script-e-t-03[data-script-line="0"] .dialogue-box{animation:phone-wait 3s ease-in-out infinite}
+.script-e-t-03[data-script-line="7"] .narrative-room,.script-e-t-03[data-script-line="8"] .narrative-room,.script-e-t-03[data-script-line="9"] .narrative-room,.script-e-t-03[data-script-line="10"] .narrative-room,.script-e-t-03[data-script-line="11"] .narrative-room{opacity:0;filter:brightness(0)}
+.script-e-t-03[data-script-line="8"],.script-e-t-03[data-script-line="9"],.script-e-t-03[data-script-line="10"],.script-e-t-03[data-script-line="11"]{background:#000}
+.script-e-t-03[data-script-line="8"] .scene-heading,.script-e-t-03[data-script-line="8"] .narrative-portrait,.script-e-t-03[data-script-line="9"] .scene-heading,.script-e-t-03[data-script-line="9"] .narrative-portrait,.script-e-t-03[data-script-line="10"] .scene-heading,.script-e-t-03[data-script-line="10"] .narrative-portrait,.script-e-t-03[data-script-line="11"] .scene-heading,.script-e-t-03[data-script-line="11"] .narrative-portrait{opacity:0}
+.script-e-t-03[data-script-line="8"] .dialogue-box,.script-e-t-03[data-script-line="9"] .dialogue-box,.script-e-t-03[data-script-line="10"] .dialogue-box,.script-e-t-03[data-script-line="11"] .dialogue-box{background:#050609f5;border-color:#050609}
+.script-ending-card.another h1{animation:ending-title-in 2.4s ease both}
+.script-ending-card.another:before{animation:quiet-ending-light 5s ease both}
+.script-ending-card.bad h1,.script-ending-card.bad .ending-new-game{opacity:0}
+.script-ending-card.bad.loop-complete h1{animation:ending-title-in 1.4s ease both}
+.script-ending-card.bad.loop-complete .ending-new-game{animation:ending-title-in 1.2s ease .9s both}
+.script-ending-card.bad .primary{opacity:0;pointer-events:none}
+.script-ending-card.bad.loop-complete .primary{opacity:1;pointer-events:auto;transition:opacity 1s 1.6s}
+@keyframes ending-breathe{from{transform:scale(.96);opacity:.55}to{transform:scale(1.08);opacity:1}}
+@keyframes ending-title-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ending-word-out{to{opacity:0;transform:translateY(-8px)}}
+@keyframes ending-word-in{to{opacity:1;transform:translateY(0)}}
+@keyframes memory-return-flash{0%{filter:brightness(.12)}38%{filter:brightness(1.9)}100%{filter:brightness(1)}}
+@keyframes memory-door-open{from{filter:brightness(.15);transform:scale(.98)}to{filter:brightness(1.12);transform:scale(1)}}
+@keyframes loop-memory{from{filter:saturate(.8) brightness(1)}to{filter:saturate(.25) brightness(.52)}}
+@keyframes quiet-ending-light{from{filter:brightness(.7)}to{filter:brightness(1.12)}}
+@keyframes save-complete{0%,100%{filter:none}45%{filter:brightness(1.8)}}
+@keyframes ending-glitch{0%,100%{filter:none;transform:none}25%{filter:brightness(2.2) contrast(1.5);transform:translateX(5px)}55%{filter:brightness(.4);transform:translateX(-4px)}}
+@keyframes memory-to-black{to{filter:brightness(0);opacity:0}}
+@keyframes memory-jump-cut{0%,100%{filter:none;transform:none}50%{filter:brightness(1.65) saturate(.45);transform:scale(1.025)}}
+@keyframes loop-dialogue{from{filter:none}to{filter:brightness(.72) saturate(.55)}}
+@keyframes memories-gather{0%{filter:brightness(1.35);transform:scale(1.03)}100%{filter:brightness(.9);transform:scale(1)}}
+@keyframes memory-voice{0%,100%{filter:none}50%{filter:brightness(1.4) sepia(.3)}}
+@keyframes message-send{0%,100%{box-shadow:0 10px 30px #10172655}40%{box-shadow:0 0 32px #d7c48c88}}
+@keyframes phone-wait{0%,100%{box-shadow:0 10px 30px #10172655}50%{box-shadow:0 0 22px #b9a47677}}
 @media(prefers-reduced-motion:reduce){.room-dust{animation:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){.script-ending-card.bad h1,.script-ending-card.bad .ending-new-game{opacity:1}.script-ending-card.bad .primary{opacity:1;pointer-events:auto}}
