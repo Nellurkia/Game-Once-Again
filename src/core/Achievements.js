@@ -1,5 +1,6 @@
 export const ACHIEVEMENTS=[
  {id:'hero-forward',name:'勇往直前',game:'数字勇者',description:'走到本局结尾，没有碰到任何会让你停下的「以后再说」障碍。',icon:'arrow'},
+ {id:'station-missed-again',name:'还是......做不到吗',game:'最后一班车',description:'在第二周目再次错过最后一班车。',icon:'arrow'},
  {id:'night-fear',name:'妈妈我怕黑',game:'夜庭',description:'在夜庭里，经历一次微光熄灭。',icon:'moon'},
  {id:'night-flawless',name:'因为太怕痛所以把防御力点满了',game:'夜庭',description:'从第一波到击败 Boss，整局没有受到过伤害。',icon:'shield'},
  {id:'memory-fall',name:'into the rabbit hole',game:'拾光',description:'在回忆的道路上，掉入一次深处。',icon:'hole'},

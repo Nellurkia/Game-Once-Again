@@ -18,6 +18,7 @@ export function mountStationRunner(parent,chapter){
   try{
    api=frame.contentWindow.stationRunner;if(!api)throw Error('游戏资源未加载完成');
    api.start({journey:chapter.context.playthrough,save:chapter.save,getSfxVolume:chapter.context.getSfxVolume,
+    onAchievement:id=>!disposed&&chapter.onAchievement?.(id),
     onProgress:snapshot=>!disposed&&chapter.onProgress?.(snapshot),
     onComplete:result=>{
      if(disposed||completed||result.journey!==chapter.context.playthrough)return;completed=true;
