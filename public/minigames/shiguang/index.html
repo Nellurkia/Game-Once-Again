@@ -18,7 +18,7 @@
         <div class="world-label"><span id="zone-name">01 / 旧书房与阁楼</span><span class="pixel-tag">MEMORY</span></div>
         <div id="interaction" class="interaction" hidden></div>
         <div class="region-caption" id="region-caption"></div>
-        <div id="story" class="story" hidden><p id="story-text"></p><button id="story-close">继续走走 <span>↵</span></button></div>
+        <div id="story" class="story" hidden><p id="story-text"></p><button id="story-close">继续走走 <span>空格</span></button></div>
       </div>
       <aside class="inventory" aria-label="已拾取的记忆碎片">
         <div class="inventory-title"><span>记忆碎片</span><small id="inventory-count">0 枚</small></div>
@@ -28,6 +28,10 @@
         <div class="inventory-footer"><div class="progress-heading"><span>回忆的路</span><span id="progress-count">0 / 11</span></div><div class="progress-bar"><i id="progress-fill"></i></div><div class="region-dots" id="region-dots"></div><p id="current-goal">先找到附近的记忆碎片</p></div>
       </aside>
     </section>
+    <nav id="touch-controls" aria-label="触屏操作">
+      <div class="touch-move"><button type="button" data-touch="left" aria-label="向左移动">←</button><button type="button" data-touch="right" aria-label="向右移动">→</button></div>
+      <div class="touch-action"><button type="button" data-touch="jump">跳跃</button><button type="button" data-touch="interact">互动</button></div>
+    </nav>
     <footer class="hint-bar"><span class="hint-orb"></span><span id="hint-text">A / D 移动 · Space 跳跃 · 碰到碎片即拾取 · M 地图</span><span id="save-status">本地记忆</span></footer>
     <canvas id="drag-layer" width="1280" height="720" aria-hidden="true"></canvas>
     <section id="cover" class="cover">

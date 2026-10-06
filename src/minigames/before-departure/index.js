@@ -4,8 +4,9 @@ import {illustration} from '../../systems/Illustrations.js';
 
 export function mountBeforeDeparture(parent,chapter={}){
  const model=new BeforeDeparture({playthrough:chapter.context?.playthrough,save:chapter.save,onProgress:chapter.onProgress});
+ const touch=matchMedia('(pointer: coarse)').matches;
  const root=document.createElement('section');root.className='departure-game';root.setAttribute('aria-label','出门之前 · 青年时期');
- root.innerHTML=`<canvas width="1280" height="720" tabindex="0" aria-label="青年时期地图：方向键或 WASD 移动，E 互动；点击地图可移动。"></canvas><header class="departure-header"><div><span class="eyebrow">BEFORE DEPARTURE</span><h2>出门之前</h2><small>${model.revisit?'这一次，真的走出门。':'原始存档 · 看清那些“再等等”。'}</small></div><div class="departure-clock"><span>今天 <strong id="departure-time"></strong></span><small>19:00 前出门 · 19:30 前到站台</small></div></header><aside class="departure-sidebar"><span class="departure-section-label">A 正在等你</span><strong id="departure-a-state"></strong><p id="departure-message"></p><button id="departure-phone">查看消息 / 回复 A · M</button><div class="departure-hesitation"><span id="departure-hesitation-label"></span><div id="departure-hesitation"></div></div><span class="departure-section-label">背包 · 必需两格，可选两格</span><div id="departure-bag"></div><p id="departure-goal"></p></aside><footer class="departure-footer"><div><strong id="departure-nearby"></strong><p>WASD / 方向键移动 · E 互动 · M 消息 · P 暂停<br>触屏：点物品走近并互动；手柄：摇杆移动，A 互动，B 返回</p></div><div class="departure-actions"><button id="departure-pause">暂停 · P</button><button id="departure-interact">互动 · E</button></div></footer><div class="departure-task" hidden><span id="departure-task-label"></span><progress id="departure-task-progress" max="1"></progress><button id="departure-fast" hidden>加快旧记忆 · F</button></div><div class="departure-overlay" hidden></div>`;
+ root.innerHTML=`<canvas width="1280" height="720" tabindex="0" aria-label="青年时期地图：方向键或 WASD 移动，E 互动；点击地图可移动。"></canvas><header class="departure-header"><div><span class="eyebrow">BEFORE DEPARTURE</span><h2>出门之前</h2><small>${model.revisit?'这一次，真的走出门。':'原始存档 · 看清那些“再等等”。'}</small></div><div class="departure-clock"><span>今天 <strong id="departure-time"></strong></span><small>19:00 前出门 · 19:30 前到站台</small></div></header><aside class="departure-sidebar"><span class="departure-section-label">A 正在等你</span><strong id="departure-a-state"></strong><p id="departure-message"></p><button id="departure-phone">${touch?'查看 / 回复消息':'查看消息 / 回复 A · M'}</button><div class="departure-hesitation"><span id="departure-hesitation-label"></span><div id="departure-hesitation"></div></div><span class="departure-section-label">背包 · 必需两格，可选两格</span><div id="departure-bag"></div><p id="departure-goal"></p></aside><footer class="departure-footer"><div><strong id="departure-nearby"></strong><p>${touch?'点击地图移动；点物品会自动走近并互动。':'WASD / 方向键移动 · E 互动 · M 消息 · P 暂停'}<br>${touch?'只需在需要时使用右侧的互动按钮。':'手柄：摇杆移动，A 互动，B 返回'}</p></div><div class="departure-actions"><button id="departure-pause">${touch?'暂停':'暂停 · P'}</button><button id="departure-interact">${touch?'互动':'互动 · E'}</button></div></footer><div class="departure-task" hidden><span id="departure-task-label"></span><progress id="departure-task-progress" max="1"></progress><button id="departure-fast" hidden>${touch?'加快旧记忆':'加快旧记忆 · F'}</button></div><div class="departure-overlay" hidden></div>`;
  parent.append(root);
  const $=selector=>root.querySelector(selector),canvas=$('canvas'),c=canvas.getContext('2d');
  const photos={};for(const name of ['Y1-rental-night.png','Y4-door-hesitation.png','Y6-empty-platform.png','Y11-ng-platform-reunion.png','Y10-ng-running-corridor.png']){const img=new Image();img.src=illustration(name);photos[name]=img;}
@@ -36,7 +37,7 @@ export function mountBeforeDeparture(parent,chapter={}){
    title.textContent=s.outcome==='SUCCESS_AT_STATION'?'你来了。':s.outcome==='MISSED'?'那个空出来的位置。':'这一次，还能再试。';content.textContent=model.results[s.resultLine];
    const last=s.resultLine===model.results.length-1;
    if(model.revisit&&s.outcome==='FAILED_LATE'){button('再试一次 · 最近检查点',()=>model.retry());button('从门口重试',()=>model.retry('door'),!model.checkpoints.door);}
-   button(last?'继续看结果 →':'继续 · Enter',proceed);
+   button(last?'继续看结果 →':touch?'点击继续':'继续 · 空格',proceed);
    const timeline=document.createElement('details'),summary=document.createElement('summary');summary.textContent='看看这一次的时间线';timeline.append(summary);
    const log=document.createElement('p');log.className='departure-timeline';
    const labels={action_start:'开始行动',action_done:'完成行动',reply:'回复 A',route:'选择路线',left_home:'走出住所',A_state:'A 的等待状态变化',checkpoint:'记下这个时刻',result:'记忆收束',retry:'回到检查点'};
@@ -119,7 +120,7 @@ export function mountBeforeDeparture(parent,chapter={}){
   const bag=JSON.stringify([s.hasKey,s.hasPass,s.inventory]);
   if(bag!==bagSignature){bagSignature=bag;$('#departure-bag').innerHTML=`<span class="${s.hasKey?'packed':''}">${s.hasKey?'✓':'○'} 钥匙</span><span class="${s.hasPass?'packed':''}">${s.hasPass?'✓':'○'} 钱包 / 凭证</span>${[0,1].map(i=>`<span>${s.inventory[i]?ITEMS[s.inventory[i]]:'空位 · 不必填满'}</span>`).join('')}`;}
   $('#departure-goal').textContent=!s.hasKey||!s.hasPass?'走近钥匙与钱包，按 E 拿上。':s.leftAt===null?'去门口，决定现在走，还是再准备一下。':s.area==='landing'?'看清路线与预计时间，再做选择。':s.area==='store'?'补给是可选的。还要留出到站的时间。':'19:30 前走到站台，靠近 A。';
-  const near=model.nearest;$('#departure-nearby').textContent=near?`${near.name} · E`:'点地图移动，或走近一个物品。';
+  const near=model.nearest;$('#departure-nearby').textContent=near?`${near.name}${touch?' · 点互动':' · E'}`:'点地图移动，或走近一个物品。';
   const task=$('.departure-task');task.hidden=!s.task;
   if(s.task){$('#departure-task-label').textContent=s.task.type==='original'?'原始存档：一次次等待，钟还在走。':s.task.type==='travel'?`正在去${AREAS[s.task.payload.target]} · 路线耗时 ${s.task.total} 分钟`:`这次准备耗时 ${s.task.total} 分钟`;$('#departure-task-progress').value=1-s.task.remaining/s.task.total;$('#departure-fast').hidden=s.task.type!=='original';$('#departure-fast').textContent=fast?'恢复正常播放 · F':'加快旧记忆 · F';}
   const notice=s.notifications.at(-1);if(notice&&notice!==lastNotice){lastNotice=notice;chime();}
@@ -135,14 +136,14 @@ export function mountBeforeDeparture(parent,chapter={}){
  const clampPoint=(n,a,b)=>Math.max(a,Math.min(b,n));
  function keydown(event){
   if(document.querySelector('dialog[open]'))return;
-  const key=event.key.toLowerCase();if(!['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','e','m','p','escape','enter','f'].includes(key))return;
-  if(event.target.tagName==='BUTTON'&&key==='enter')return;
+  const key=event.key.toLowerCase();if(!['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','e','m','p','escape',' ','f'].includes(key))return;
+  if(event.target.tagName==='BUTTON'&&key===' ')return;
   event.preventDefault();unlockSound();if(event.repeat)return;
-  if(intro){if(key==='enter'){intro=false;canvas.focus();}return;}
+  if(intro){if(key===' '){intro=false;canvas.focus();}return;}
   if(key==='escape'&&model.s.dialog){model.cancel();clear();return;}
   if(key==='p'||key==='escape'){pause();return;}if(paused)return;
   if(key==='f'&&model.s.task?.type==='original'){fast=!fast;return;}
-  if(key==='enter'&&model.s.phase==='result'){proceed();return;}
+  if(key===' '&&model.s.phase==='result'){proceed();return;}
   if(key==='m'){$('#departure-phone').click();return;}
   if(model.s.dialog)return;
   if(key==='e'){model.interact();clear();return;}target=null;keys.add(key);

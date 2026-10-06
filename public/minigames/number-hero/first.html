@@ -103,8 +103,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05070c;
 #pauseScreen button{margin-top:18px;padding:10px 22px;background:#213c2c;color:#d5e4cf;border:1px solid #7fe39a88;border-radius:6px;font:inherit}
 #touchPad{display:none;position:fixed;z-index:16;left:18px;right:18px;bottom:max(16px,env(safe-area-inset-bottom));justify-content:space-between;pointer-events:none}
 #touchPad .touchGroup{display:flex;gap:9px;pointer-events:auto}
-#touchPad button{min-width:58px;min-height:52px;padding:8px 12px;border:1px solid #7fe39a66;border-radius:10px;background:#07100bc9;color:#c8e6ca;font:14px "Courier New",monospace;touch-action:none}
+#touchPad button{min-width:96px;min-height:84px;padding:8px 12px;border:1px solid #7fe39a66;border-radius:14px;background:#07100bc9;color:#c8e6ca;font:24px "Courier New",monospace;touch-action:none}
 #touchPad button:active{background:#31513b}
+.touchHint{align-self:center;max-width:170px;padding:9px 12px;border-radius:9px;background:#07100ba8;color:#b8c7b9;font:12px/1.5 "Microsoft YaHei",sans-serif;text-align:center}
 @media(pointer:coarse){#touchPad{display:flex}#hint{display:none}}
 @media(max-width:520px){#menu{gap:9px;padding:14px}#menu h1{font-size:clamp(28px,8vw,44px)}.mbtn{min-width:min(280px,calc(100vw - 48px));padding:11px 20px}.box{padding:23px 20px}.box .bd{font-size:13px}#track{right:9px}#dist{right:36px;font-size:10px}}
 </style>
@@ -133,7 +134,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05070c;
 
 <div class="overlay" id="modal"></div>
 
-<button id="pauseBtn" type="button">暂停 · P</button><div id="pauseScreen"><div class="pauseBox">攀登已暂停<br><small>稍作休息，准备好后继续。</small><br><button type="button">继续攀登</button></div></div><div id="touchPad"><div class="touchGroup"><button type="button" data-key="a">←</button><button type="button" data-key="d">→</button></div><div class="touchGroup"><button type="button" data-key="s">减速</button><button type="button" data-key="w">加速</button></div></div><div id="menu">
+<button id="pauseBtn" type="button">暂停 · P</button><div id="pauseScreen"><div class="pauseBox">攀登已暂停<br><small>稍作休息，准备好后继续。</small><br><button type="button">继续攀登</button></div></div><div id="touchPad"><div class="touchGroup"><button type="button" data-key="a" aria-label="向左移动">←</button><button type="button" data-key="d" aria-label="向右移动">→</button></div><span class="touchHint">按住左右躲避<br>角色会自动攀登</span></div><div id="menu">
   <div class="pre">┼ ┼ ┼</div>
   <h1>数字勇者</h1>
   <div class="sub">爬 山</div>

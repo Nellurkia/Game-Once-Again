@@ -247,3 +247,15 @@ body.mobile-portrait #orientation-hint{display:flex}
 .title-scene.new-journey .table-action:first-child>span{color:#712d1d;text-shadow:0 1px #fff0ce,0 0 8px #ffdfa1}
 .title-scene.new-journey .console-menu #console-new{color:#7d351f;background:#e88d4c77;outline:1px solid #bd613caa;text-shadow:0 1px #fff1ca,0 0 7px #ffd68c}
 @media(max-width:700px){.ending-options{width:204px;gap:3px}.ending-options button{height:42px}.endings-scene h2{font-size:24px}}
+.narrative-scene{cursor:pointer;touch-action:manipulation}
+.narrative-scene:has(.dialogue-actions button:not(.text-button)){cursor:default}
+.narrative-advance-hint{position:absolute;right:7%;bottom:3%;z-index:2;color:#b9b0c7b8;font-size:10px;letter-spacing:1px;pointer-events:none}
+@media(pointer:coarse){
+ button{touch-action:manipulation}
+ .narrative-advance-hint{right:6%;bottom:2.4%;font-size:12px;color:#e2d6e3}
+ .dialogue-actions button{min-width:124px;min-height:76px;padding:10px 14px;font-size:14px}
+ .departure-sidebar button,.departure-actions button,.departure-task button{min-height:72px;font-size:15px}
+ .departure-actions button{min-width:126px}
+ .departure-dialog-actions button{min-height:78px;font-size:16px}
+ .survivor-scene .dpad{display:none}
+}

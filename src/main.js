@@ -58,7 +58,7 @@ function title(){
 function narrative(heading,storyKey,done){
  const lines=data.story[storyKey];
  const effect=['p1_13','p1_14','p2_18','E-B-01','E-B-02','E-B-03','E-A-01','E-A-02','E-A-03','E-T-01','E-T-02','E-T-03'].includes(storyKey)?`script-${storyKey.toLowerCase().replaceAll('_','-')}`:'';
- screen.innerHTML=`<div class="narrative-scene ${effect}"><div class="narrative-room"><img id="narrative-art" class="narrative-illustration" alt="回忆插图"></div><div class="scene-heading"><span class="eyebrow">A MEMORY RETURNS</span><h2>${heading}</h2></div>${narrativePortrait(manager.state)}<div class="dialogue-box" id="dialogue"></div></div>`;
+ screen.innerHTML=`<div class="narrative-scene ${effect}" aria-label="剧情画面，点击任意空白位置或按空格继续"><div class="narrative-room"><img id="narrative-art" class="narrative-illustration" alt="回忆插图"></div><div class="scene-heading"><span class="eyebrow">A MEMORY RETURNS</span><h2>${heading}</h2></div>${narrativePortrait(manager.state)}<div class="dialogue-box" id="dialogue"></div><span class="narrative-advance-hint">点击任意处 / 空格继续</span></div>`;
  dialogue=new Dialogue(document.getElementById('dialogue'),lines,done,(k,v)=>manager.setFlag(k,v),{
   startIndex:manager.dialogueIndex(storyKey,lines.length),
   onProgress:index=>{const scene=document.querySelector('.narrative-scene');if(scene)scene.dataset.scriptLine=String(index);document.getElementById("narrative-art").src=illustration(narrativeIllustration(storyKey,index,manager.state));manager.saveDialoguePosition(storyKey,index);}

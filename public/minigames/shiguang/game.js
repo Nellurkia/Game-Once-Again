@@ -8,6 +8,7 @@
   const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
   const distance = (a,b) => Math.hypot(a.x-b.x,a.y-b.y);
   const pieceById = new Map(L.pieces.map(p=>[p.id,p]));
+  const touch = matchMedia('(pointer: coarse)').matches;
   const atlas = document.createElement('canvas');
   atlas.width=L.worldWidth; atlas.height=L.worldHeight;
   const ac = atlas.getContext('2d');
@@ -21,8 +22,9 @@
 
   function setState(next){transitions.push({from:state,to:next});if(transitions.length>100)transitions.shift();state=next;}
   function resize(){
-    const scale=Math.min(innerWidth/1280,innerHeight/720);
-    $('game').style.transform=`scale(${scale})`;
+    const viewport=window.visualViewport;
+    const scale=Math.min((viewport?.width||innerWidth)/1280,(viewport?.height||innerHeight)/720);
+    $('game').style.transform=`translate(-50%,-50%) scale(${scale})`;
   }
   function screenPoint(e){const r=$('game').getBoundingClientRect();return {x:(e.clientX-r.left)*1280/r.width,y:(e.clientY-r.top)*720/r.height};}
   function worldPoint(e){const p=screenPoint(e);return {x:p.x-C.viewport.x+camera,y:p.y-C.viewport.y+cameraY};}
@@ -76,6 +78,7 @@
     save=storedCandidate||newSave();spawn();active=false;setState('COVER');$('cover').hidden=false;
     $('modal').hidden=true;$('story').hidden=true;$('continue-button').hidden=!storedCandidate;
     $('journey-label').textContent=variant.id==='first'?'一周目 · 11 块通路，3 处留白':'二周目 · 全部 14 块必须归位';
+    document.querySelector('.cover-controls').textContent=touch?'按住左右移动 · 点按跳跃 / 拖动拼图':'左右移动 + 跳跃 / 鼠标拼接场景';
     updateUI();render();
   }
   function spawn(){
@@ -89,7 +92,9 @@
     if(save.completed){completionModal(false);return;}
     if(!save.tutorialFlags.entered){
       showModal('把记忆慢慢拼回来','HOW TO PLAY',
-        '<p>在残缺的记忆里走走，拾起碎片，把路接回原来的位置。</p><div class="control-grid"><span><kbd>A</kbd><kbd>D</kbd> / ← →</span><span>左右移动</span><span><kbd>Space</kbd></span><span>跳跃到平台上</span><span><kbd>E</kbd></span><span>操作信号灯、拾取钥匙与开门</span><span>鼠标左键</span><span>按住右侧碎片，直接拖入场景缺口</span></div><p>掉下去会回到安全位置，已找到的碎片仍在。碎片碰到即拾取；新碎片会出现在刚拼好的房间或楼梯里。先接回楼梯，再登高寻找下一块。按 M 查看地图。</p><p class="small-note">当前地图、人物与剧情是示例，可在后续替换。</p>',
+        touch
+          ? '<p>按住画面下方的左右键移动，点“跳跃”登上平台；靠近信号灯、钥匙或门后点“互动”。</p><p>碰到亮光会自动拾取碎片。按住右侧碎片，把它拖进场景中形状相同的缺口。掉下去会回到安全位置，已经找到的碎片仍会保留。</p>'
+          : '<p>在残缺的记忆里走走，拾起碎片，把路接回原来的位置。</p><div class="control-grid"><span><kbd>A</kbd><kbd>D</kbd> / ← →</span><span>左右移动</span><span><kbd>Space</kbd></span><span>跳跃到平台上</span><span><kbd>E</kbd></span><span>操作信号灯、拾取钥匙与开门</span><span>鼠标左键</span><span>按住右侧碎片，直接拖入场景缺口</span></div><p>掉下去会回到安全位置，已找到的碎片仍在。碎片碰到即拾取；新碎片会出现在刚拼好的房间或楼梯里。先接回楼梯，再登高寻找下一块。按 M 查看地图。</p>',
         [{label:'开始走走 →',action:()=>{closeModal();save.tutorialFlags.entered=true;persist();hint('先碰到脚边的碎片，拖回断开的楼梯，再跳上台阶寻找新碎片。',12);}}]);
     }else hint('记忆接着上次的位置，慢慢走就好。',4);
     if(saveBlocked)toast('原存档未能读取，已保留原数据。可从帮助中导出或重置。',6000);
@@ -105,7 +110,10 @@
   function showHelp(){
     if(!active)return;
     showModal('走一走，拼一拼','CONTROLS & SAVE',
-      '<p>亮着的碎片碰到即收集。按 M 看地图；按 R 回到最近的安全点。新房间里可能藏着新碎片。</p><div class="control-grid"><span><kbd>A</kbd><kbd>D</kbd> / ← →</span><span>左右移动</span><span><kbd>Space</kbd></span><span>跳跃。上方的平台也能去。</span><span><kbd>E</kbd></span><span>操作附近信号灯、拾取钥匙，或打开终点门</span><span>鼠标拖动</span><span>观察碎片画面与缺口尺寸，拖近正确位置后松开</span><span><kbd>Esc</kbd> / <kbd>P</kbd></span><span>取消拖动，或暂停与继续</span><span><kbd>R</kbd></span><span>回到最近的安全位置，不清空进度</span></div><h3>记忆会留下来</h3><p>拾取、拼接、拿钥匙与到达安全点时自动保存。刷新后选择“继续上次的回忆”。如果浏览器没有保存成功，可以导出存档随身保留。</p><p>错误位置不会吸附，碎片会回到右栏。拖动时世界会暂时静止。'+(variant.id==='second'?'这次需要把十四块记忆全部拼好；三枚照片碎片需要回访前面的区域。':'先接回通路，进入恢复的房间找新碎片。拼回车站站牌，按图案顺序操作三个信号灯。')+'</p>'+
+      (touch
+        ? '<p>亮着的碎片碰到即收集。按住下方左右键移动，点“跳跃”登上平台；出现提示后点“互动”。按住右侧碎片，拖近正确缺口后松开。</p>'
+        : '<p>亮着的碎片碰到即收集。按 M 看地图；按 R 回到最近的安全点。新房间里可能藏着新碎片。</p><div class="control-grid"><span><kbd>A</kbd><kbd>D</kbd> / ← →</span><span>左右移动</span><span><kbd>Space</kbd></span><span>跳跃。上方的平台也能去。</span><span><kbd>E</kbd></span><span>操作附近信号灯、拾取钥匙，或打开终点门</span><span>鼠标拖动</span><span>观察碎片画面与缺口尺寸，拖近正确位置后松开</span><span><kbd>Esc</kbd> / <kbd>P</kbd></span><span>取消拖动，或暂停与继续</span><span><kbd>R</kbd></span><span>回到最近的安全位置，不清空进度</span></div>')+
+      '<h3>记忆会留下来</h3><p>拾取、拼接、拿钥匙与到达安全点时自动保存。刷新后选择“继续上次的回忆”。如果浏览器没有保存成功，可以导出存档随身保留。</p><p>错误位置不会吸附，碎片会回到右栏。拖动时世界会暂时静止。'+(variant.id==='second'?'这次需要把十四块记忆全部拼好；三枚照片碎片需要回访前面的区域。':'先接回通路，进入恢复的房间找新碎片。拼回车站站牌，按图案顺序操作三个信号灯。')+'</p>'+
       (corruptRaw?'<p class="small-note">原存档暂时无法读取，已保留，当前不会覆盖它。请先导出或确认重置。</p>':''),
       [{label:'继续回忆',action:closeModal},{label:'导出存档',light:true,action:exportSave},{label:'导入存档',light:true,action:()=>$('import-file').click()},{label:'重置本关',light:true,action:confirmReset}]);
   }
@@ -316,7 +324,7 @@
   function drawInteraction(){
     const item=(state==='PLAYING')?nearestInteraction():null;if(!item){$('interaction').hidden=true;return;}
     const text=item.type==='switch'?'操作「'+item.name+'」信号灯':item.type==='key'?'拾起钥匙':canComplete()?'打开这扇门':'看看这扇门';
-    $('interaction').innerHTML='<kbd>E</kbd> '+text;$('interaction').hidden=false;$('interaction').style.left=clamp(item.x-camera,95,930)+'px';$('interaction').style.top=(item.y-cameraY-31)+'px';
+    $('interaction').innerHTML=(touch?'':'<kbd>E</kbd> ')+text;$('interaction').hidden=false;$('interaction').style.left=clamp(item.x-camera,95,930)+'px';$('interaction').style.top=(item.y-cameraY-31)+'px';
   }
   function render(){
     ctx.clearRect(0,0,1024,608);ctx.imageSmoothingEnabled=false;ctx.drawImage(atlas,camera,cameraY,1024,608,0,0,1024,608);
@@ -356,7 +364,7 @@
     const codes=Object.values(C.bindings).flat();if(codes.includes(e.code)&&active)e.preventDefault();if(e.repeat)return;
     if(e.code==='Escape'||e.code==='KeyP'){pause();return;}
     if(e.code==='KeyM'&&!$('modal').hidden&&$('overview')){closeModal();return;}
-    if(state==='DIALOGUE'&&(e.code==='Enter'||e.code==='Space'||e.code==='KeyE')){e.preventDefault();closeStory();return;}
+    if(state==='DIALOGUE'&&(e.code==='Space'||e.code==='KeyE')){e.preventDefault();closeStory();return;}
     if(state!=='PLAYING')return;
     if(C.bindings.help.includes(e.code)){showHelp();return;}
     if(C.bindings.map.includes(e.code)){showMap();return;}
@@ -364,6 +372,26 @@
     if(C.bindings.jump.includes(e.code))queuedJump=true;if(C.bindings.interact.includes(e.code))interacted=true;keyed.add(e.code);
   }
   const onKeyUp=e=>keyed.delete(e.code);
+  const touchButtons=[...document.querySelectorAll('#touch-controls [data-touch]')];
+  function pressTouch(e){
+    e.preventDefault();
+    const button=e.currentTarget,action=button.dataset.touch;
+    button.setPointerCapture?.(e.pointerId);button.classList.add('is-held');
+    if(hostPaused||!active)return;
+    if(state==='DIALOGUE'&&(action==='jump'||action==='interact')){closeStory();return;}
+    if(state!=='PLAYING')return;
+    if(action==='left')keyed.add('KeyA');
+    else if(action==='right')keyed.add('KeyD');
+    else if(action==='jump')queuedJump=true;
+    else if(action==='interact')interacted=true;
+  }
+  function releaseTouch(e){
+    const button=e.currentTarget,action=button.dataset.touch;
+    button.classList.remove('is-held');
+    if(action==='left')keyed.delete('KeyA');
+    if(action==='right')keyed.delete('KeyD');
+  }
+  function advanceStoryPointer(e){if(state==='DIALOGUE'&&!e.target.closest('button'))closeStory();}
   function loseFocus(){clearInputs();cancelDrag();if(active&&state==='PLAYING')pause();}
   function validateLevel(){const ids=new Set(),targets=new Set();for(const p of L.pieces){if(ids.has(p.id)||targets.has(p.targetId))throw Error('拼图或目标 ID 重复');ids.add(p.id);targets.add(p.targetId);if(p.target.x<0||p.target.y<0||p.target.y+p.target.height>L.worldHeight||p.target.x+p.target.width>L.worldWidth)throw Error('拼图超出地图范围');}
     for(const p of L.pieces){for(const id of p.requires)if(!ids.has(id))throw Error('碎片依赖不存在');if(p.inside){const t=pieceById.get(p.inside).target;if(!p.requires.includes(p.inside)||p.pickup.x<t.x||p.pickup.x>t.x+t.width||p.pickup.y<t.y||p.pickup.y>t.y+t.height)throw Error('隐藏碎片不在前置画面内');}}
@@ -377,7 +405,9 @@
   };
   $('continue-button').onclick=()=>{save=storedCandidate;spawn();enter(true);};
   $('map-button').onclick=showMap;$('help-button').onclick=showHelp;$('pause-button').onclick=pause;$('story-close').onclick=closeStory;$('import-file').onchange=importSave;
-  window.addEventListener('resize',resize);window.addEventListener('keydown',onKeyDown);window.addEventListener('keyup',onKeyUp);
+  touchButtons.forEach(button=>{button.addEventListener('pointerdown',pressTouch);button.addEventListener('pointerup',releaseTouch);button.addEventListener('pointercancel',releaseTouch);button.addEventListener('lostpointercapture',releaseTouch);});
+  $('game').addEventListener('click',advanceStoryPointer);
+  window.addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);window.addEventListener('keydown',onKeyDown);window.addEventListener('keyup',onKeyUp);
   window.addEventListener('pointermove',updateDrag);window.addEventListener('pointerup',finishDrag);window.addEventListener('pointercancel',cancelDrag);
   const onVisibility=()=>{if(document.hidden)loseFocus();},onPageHide=()=>{if(active)persist();};
   window.addEventListener('blur',loseFocus);document.addEventListener('visibilitychange',onVisibility);
@@ -387,8 +417,8 @@
     getSaveData:snapshot,
     setHostPaused(value){hostPaused=!!value;clearInputs();cancelDrag();if(hostPaused)persist();},
     inspect(){return {state,variantId:variant.id,player:{...player},camera,cameraY,puzzleFlags:{...save.puzzleFlags},revealedPickupIds:availablePieces().filter(p=>ready(p)&&save.pieceStates[p.id]==='uncollected').map(p=>p.id),placed:placedCount(),inventory:availablePieces().filter(p=>save.pieceStates[p.id]==='inventory').map(p=>p.id),canComplete:canComplete(),diagnostics:{...diagnostics},transitions:[...transitions]};},
-    dispose(){persist();disposed=true;active=false;cancelDrag();clearInputs();clearTimeout(toastTimer);window.removeEventListener('keydown',onKeyDown);window.removeEventListener('keyup',onKeyUp);window.removeEventListener('pointermove',updateDrag);window.removeEventListener('pointerup',finishDrag);window.removeEventListener('pointercancel',cancelDrag);window.removeEventListener('blur',loseFocus);window.removeEventListener('resize',resize);document.removeEventListener('visibilitychange',onVisibility);window.removeEventListener('pagehide',onPageHide);for(const id of ['start-button','continue-button','help-button','map-button','pause-button','story-close'])$(id).onclick=null;$('import-file').onchange=null;}
+    dispose(){persist();disposed=true;active=false;cancelDrag();clearInputs();clearTimeout(toastTimer);window.removeEventListener('keydown',onKeyDown);window.removeEventListener('keyup',onKeyUp);window.removeEventListener('pointermove',updateDrag);window.removeEventListener('pointerup',finishDrag);window.removeEventListener('pointercancel',cancelDrag);window.removeEventListener('blur',loseFocus);window.removeEventListener('resize',resize);window.visualViewport?.removeEventListener('resize',resize);document.removeEventListener('visibilitychange',onVisibility);window.removeEventListener('pagehide',onPageHide);$('game').removeEventListener('click',advanceStoryPointer);touchButtons.forEach(button=>{button.removeEventListener('pointerdown',pressTouch);button.removeEventListener('pointerup',releaseTouch);button.removeEventListener('pointercancel',releaseTouch);button.removeEventListener('lostpointercapture',releaseTouch);});for(const id of ['start-button','continue-button','help-button','map-button','pause-button','story-close'])$(id).onclick=null;$('import-file').onchange=null;}
   };
-  try{validateLevel();buildAtlas();loadContext(window.MEMORY_GAME_CONTEXT||{});resize();requestAnimationFrame(frame);}
+  try{validateLevel();buildAtlas();loadContext(window.MEMORY_GAME_CONTEXT||{});resize();requestAnimationFrame(()=>{resize();requestAnimationFrame(frame);});}
   catch(e){diagnostics.errors.push(String(e));$('cover').hidden=true;showModal('这段记忆暂时打不开','LOAD ERROR',`<p>${e.message}</p><p>请检查配置与本地文件是否完整。</p>`,[]);console.error(e);}
 })();

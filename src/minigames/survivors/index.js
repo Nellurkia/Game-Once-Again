@@ -3,6 +3,7 @@ import {SurvivorRun,ARENA,SHELTERS,WALLS,ITEMS} from './model.js';
 
 register('survivors',{create(scene,config,onComplete){
  let run=new SurvivorRun(),overlay=null,lastMode='',destroyed=false,finished=false,hideToggle=false,pointerTarget=null,nudge=null;
+ const touch=matchMedia('(pointer: coarse)').matches;
  const keys=new Set();
  const colors={floor:0x14272d,edge:0x38504e,gold:0xf4d69a,mint:0x9ed9bb,pink:0xe990a0};
  const text=(x,y,value,size=16,color='#c2cfc9')=>scene.add.text(x,y,value,{fontFamily:'"Microsoft YaHei", sans-serif',fontSize:`${size}px`,color,lineSpacing:9});
@@ -27,9 +28,9 @@ register('survivors',{create(scene,config,onComplete){
  const score=text(1216,83,'',15,'#cabdde').setOrigin(1,0);
  const status=text(640,602,'',16,'#b9cfbe').setOrigin(.5,0);
  const inventory=text(48,636,'道具  0 / 3',14,'#d3bd95');
- text(275,682,'WASD / 方向键移动 · 自动攻击 · 草丛中按住空格躲藏',13,'#8caaa0').setOrigin(0,.5);
- const hideButton=scene.add.rectangle(1100,661,222,48,0x294c42).setStrokeStyle(1,0x699b7e).setInteractive({useHandCursor:true});
- const hideLabel=text(1100,661,'躲藏：关闭  [空格]',15,'#c7e6c8').setOrigin(.5);
+ text(275,682,touch?'按住场地拖动移动 · 自动攻击 · 点右侧按钮躲藏':'WASD / 方向键移动 · 自动攻击 · 草丛中按住空格躲藏',touch?15:13,'#8caaa0').setOrigin(0,.5);
+ const hideButton=scene.add.rectangle(1090,645,touch?280:222,touch?84:48,0x294c42).setStrokeStyle(1,0x699b7e).setInteractive({useHandCursor:true});
+ const hideLabel=text(1090,touch?645:657,touch?'躲藏：关闭':'躲藏：关闭  [空格]',touch?18:15,'#c7e6c8').setOrigin(.5);
  hideButton.on('pointerdown',()=>{if(['wave','boss'].includes(run.mode))hideToggle=!hideToggle;});
 
  function cardButton(container,x,y,w,h,label,action){
@@ -63,7 +64,7 @@ register('survivors',{create(scene,config,onComplete){
    overlay.add(text(640,220,'夜庭幸存者',42,'#f5dfa9').setOrigin(.5));
    overlay.add(text(640,279,'三波怪潮 · 三次道具选择 · 一场 Boss 战',20,'#a7d3b6').setOrigin(.5));
    overlay.add(text(640,358,'移动即可自动攻击，击败阴影拾取微光回血。\n进入绿色草丛后按住空格：停止攻击、甩开追踪并回血。\n屏息耗尽需松开恢复；石墙挡飞弹，躲藏不能免疫伤害。\n触屏：按住场地拖动移动，点击右下按钮切换躲藏。',18).setOrigin(.5).setAlign('center'));
-   cardButton(overlay,640,505,290,58,'踏入夜庭  /  Enter',begin);
+   cardButton(overlay,640,505,310,62,touch?'点击踏入夜庭':'踏入夜庭  /  空格',begin);
   }else if(run.mode==='lost'){
    overlay.add(text(640,265,'微光暂时熄灭了',38,'#edc8bd').setOrigin(.5));
    overlay.add(text(640,342,`击退 ${run.kills} 个阴影 · 收集 ${run.items.length} 件道具\n试着借助草丛恢复，再绕到石墙后躲避弹幕。`,19).setOrigin(.5).setAlign('center'));
@@ -71,16 +72,16 @@ register('survivors',{create(scene,config,onComplete){
   }else{
    overlay.add(text(640,260,'长夜散去，微光仍在',38,'#f5dfa9').setOrigin(.5));
    overlay.add(text(640,334,`三轮历练完成 · 击退 ${run.kills} 个阴影\n${run.items.map(id=>ITEMS.find(i=>i.id===id).name).join('  ·  ')}`,18).setOrigin(.5).setAlign('center'));
-   cardButton(overlay,640,455,310,58,'继续这段故事  /  Enter',complete);
+   cardButton(overlay,640,455,330,62,touch?'点击继续故事':'继续这段故事  /  空格',complete);
   }
  }
  const controls=['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d',' '];
  function down(event){
   if(document.querySelector('dialog[open]')||['INPUT','TEXTAREA'].includes(event.target.tagName))return;
   const key=event.key.length===1?event.key.toLowerCase():event.key;
+  if(key===' '&&['ready','won'].includes(run.mode)){event.preventDefault();if(!event.repeat){begin();complete();}return;}
   if(controls.includes(key)){event.preventDefault();keys.add(key);}
   if(event.repeat)return;
-  if(key==='Enter'&&['ready','won'].includes(run.mode)){event.preventDefault();begin();complete();}
   if(key==='r'&&run.mode==='lost'){event.preventDefault();retry();}
   if(['1','2','3'].includes(key)&&run.mode==='choice'){event.preventDefault();pick(Number(key)-1);}
  }
@@ -122,7 +123,7 @@ register('survivors',{create(scene,config,onComplete){
   const inShelter=SHELTERS.some(s=>Math.hypot(p.x-s.x,p.y-s.y)<s.r-8);
   status.setText(p.hidden?'正在躲藏 · 停止攻击 / 恢复生命 / 解除锁定':p.exhausted&&(hideToggle||keys.has(' '))?'屏息耗尽 · 松开空格或关闭躲藏，恢复后再藏身':run.boss?.warning?.kind==='mark'?'危险：红圈即将爆发！离开红圈，或进入草丛躲藏解除锁定':run.boss?.warning?.kind==='burst'?'危险：环形弹幕即将释放！寻找弹幕间隙或石墙掩护':inShelter?'进入藏身处 · 按住空格，或点击右下按钮屏息':'收集金色微光回血 · 草丛甩开追踪 · 石墙阻挡飞弹');
   inventory.setText(`道具 ${run.items.length} / 3  ${run.items.map(id=>ITEMS.find(item=>item.id===id).name).join(' · ')}`);
-  hideLabel.setText(hideToggle?'躲藏：开启  [点击关闭]':keys.has(' ')?'正在屏息  [松开空格结束]':'躲藏：关闭  [空格]');
+  hideLabel.setText(touch?(hideToggle?'躲藏：开启 · 点按关闭':'躲藏：关闭 · 点按开启'):hideToggle?'躲藏：开启  [点击关闭]':keys.has(' ')?'正在屏息  [松开空格结束]':'躲藏：关闭  [空格]');
  }
  function update(time,delta){
   if(destroyed||finished)return;

@@ -93,7 +93,7 @@ export function mountMemoryPuzzle(parent,chapter={}){
    text('把旧时光，一块一块放回去',640,171,30,'#715136','center');
    paragraph('A / D 或方向键左右移动，Space 跳跃。\n在闪光碎片旁按 E 拾取，再从右栏拖到场景中的同编号缺口。\n拼对后道路立即恢复；放错不会丢失，掉落会回到安全点。\n'+(model.variant.id==='first'?'这一周目：拼好可取得的道路碎片，找到钥匙并抵达出口。':'这一周目：所有记忆碎片都要放回场景，再带钥匙抵达出口。'),205,236,870,18);
    text('当前为可替换示例地图，正式回忆内容待主剧情补充。',640,425,14,'#9c8060','center');
-   button(477,476,326,52,'走进记忆  /  Enter',resume);
+   button(477,476,326,52,'走进记忆  /  空格',resume);
   }else if(overlay==='help'||overlay==='pause'){
    text(overlay==='help'?'操作与当前目标':'在这里歇一会儿',640,166,29,'#715136','center');
    paragraph('A / D、← / →：移动    Space：跳跃    E：拾取 / 开门\n拖动右栏切片，按相同编号匹配缺口；需先拼左侧道路。\nR：回安全点    H：帮助    P：暂停    Esc：取消拖动 / 返回\n掉落不损失碎片。拖放时冻结场景；刷新后从安全点恢复。',205,225,860,17);
@@ -109,7 +109,7 @@ export function mountMemoryPuzzle(parent,chapter={}){
   }else if(overlay==='completed'){
    text(model.variant.id==='complete'?'这段记忆，终于完整了':'带着留白，也能走向前方',640,208,32,'#715136','center');
    paragraph(model.variant.id==='complete'?'本关全部拼图已恢复，出口已经打开。':'本周目需要的道路已恢复，出口已经打开。仍有留白等待下一次回望。',260,304,760,19);
-   text(model.saveStatus==='memory'?'本次进度暂未保存，可先导出备份。':'本关完成，继续后回到总游戏剧情。',640,386,16,'#8b7050','center');button(350,464,310,52,notified?'已完成':'继续故事  /  Enter',complete);button(710,464,200,52,'导出存档',exportSave);
+   text(model.saveStatus==='memory'?'本次进度暂未保存，可先导出备份。':'本关完成，继续后回到总游戏剧情。',640,386,16,'#8b7050','center');button(350,464,310,52,notified?'已完成':'继续故事  /  空格',complete);button(710,464,200,52,'导出存档',exportSave);
   }
  }
  function draw(time){
@@ -150,10 +150,10 @@ export function mountMemoryPuzzle(parent,chapter={}){
  function wheel(event){if(point(event).x>=1024){event.preventDefault();scroll+=event.deltaY>0?1:-1;}}
  function keydown(event){
   if(document.querySelector('dialog[open]')||['INPUT','TEXTAREA'].includes(event.target.tagName))return;const key=event.key.length===1?event.key.toLowerCase():event.key;
-  if(['a','d','ArrowLeft','ArrowRight',' ','e','r','h','p','Escape','Enter'].includes(key))event.preventDefault();
+  if(['a','d','ArrowLeft','ArrowRight',' ','e','r','h','p','Escape'].includes(key))event.preventDefault();
   if(key==='Escape'){if(drag)cancelDrag();else if(overlay==='help'){overlay=previousOverlay;previousOverlay=null;}else if(!overlay||overlay==='pause')togglePause();return;}
   if(event.repeat){if(['a','d','ArrowLeft','ArrowRight'].includes(key)&&!overlay&&!drag)keys.add(key);return;}
-  if(key==='Enter'){if(overlay==='intro')resume();else if(overlay==='completed')complete();return;}
+  if(key===' '&&overlay){if(overlay==='intro')resume();else if(overlay==='completed')complete();return;}
   if(key==='h'&&overlay!=='recovery'&&overlay!=='confirm-reset'){cancelDrag();clearInputs();if(overlay==='help'){overlay=previousOverlay;previousOverlay=null;}else{previousOverlay=overlay;overlay='help';model.commit();}return;}
   if(key==='p'){togglePause();return;}
   if(overlay||drag)return;
