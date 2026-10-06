@@ -1,4 +1,22 @@
 export const illustration=name=>`${import.meta.env.BASE_URL}assets/illustrations/${name}`;
+const suppliedStoryImages={
+ prologue:[[0,2,1],[3,6,2]],
+ ch1_w1:[[3,5,3],[6,8,4],[9,10,5]],
+ p1_03:[[0,4,6],[5,7,7],[8,9,8]],
+ p1_04:[[0,4,9],[5,9,10],[10,11,11]],
+ p1_05_pre:[[0,5,12],[6,11,13]],p1_05_post:[[0,0,14]],p1_07:[[0,3,15]],
+ p1_08:[[0,8,16]],p1_09:[[0,6,17],[7,9,18]],p1_10:[[0,9,19],[10,12,20]],p1_11:[[0,8,21]],
+ p1_12_pre:[[0,3,22]],p1_14:[[9,13,23]],
+ ch1_w2:[[0,11,24]],p2_03:[[8,10,25]],
+ p2_04:[[0,2,26],[3,5,27],[6,14,28]],p2_05_post:[[3,10,29]],
+ p2_08:[[0,3,30],[4,7,31],[8,11,32],[12,13,33]],p2_09:[[0,10,34]],
+ p2_10:[[0,3,35]],p2_11:[[0,7,36]],p2_12:[[0,13,37]],
+ p2_15:[[0,2,38],[3,7,28]],p2_17:[[0,7,39]],p2_18:[[0,5,37]]
+};
+function suppliedImage(key,index){
+ const range=suppliedStoryImages[key]?.find(([from,to])=>index>=from&&index<=to);
+ return range?`story-replace-${String(range[2]).padStart(2,'0')}.webp`:null;
+}
 // Match illustrations to the active chapter and its outcome.
 export function narrativeIllustration(key,index,state){
  const revisit=state.playthrough!==1;
@@ -28,6 +46,7 @@ export function narrativeIllustration(key,index,state){
   if(state.scene==='ch3')return state.flags.youthOutcome==='SUCCESS_AT_STATION'?'Y11-ng-platform-reunion.png':'Y6-empty-platform.png';
   return state.scene==='ch4'?'A5-empty-child-room.png':state.scene==='ch2'?'T7-chapter-card.png':revisit?'NG1-mother-enters.png':'C7-morning-asleep.png';
  }
+ const supplied=suppliedImage(key,index);if(supplied)return supplied;
  const list=sequences[key];return list?.[Math.min(index,list.length-1)]||'shot2-screen-glow.png';
 }
 export function menuIllustration(kind,index){

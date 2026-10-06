@@ -1,6 +1,6 @@
 # 插图替换记录
 
-来源：用户提供的 `插图.zip`（76 张）及一周目第二幕补充插图（6 张）。按当前剧情与玩法接入 35 张原始文件，位于 `public/assets/illustrations/`。第三幕现已整体替换为青年时期《出门之前》，追加对应出租屋、门口、车站和青年人物素材。
+来源：用户提供的 `插图.zip`（76 张）、一周目第二幕补充插图（6 张）及《替换图片.docx》（39 张）。新增文档插图以 `story-replace-01.webp` 至 `story-replace-39.webp` 放在 `public/assets/illustrations/`，由原图转为 WebP 后共约 3 MB。按对白行号在一、二周目分别接入；映射逻辑位于 `src/systems/Illustrations.js`。第三幕现已整体替换为青年时期《出门之前》，追加对应出租屋、门口、车站和青年人物素材。
 
 | 使用位置 | 原文件 |
 | --- | --- |
@@ -13,6 +13,8 @@
 | 第四幕回忆入场和尾声 | A5-empty-child-room.png |
 | 幕间、结局选择、NE、TE、制作人员 | E2-new-game-plus.png、E1-save-menu.png、E3-save-current-life.png、E4-restore-save.png、E5-phone-final.png |
 | 第一幕童年、第二幕少年、第三幕青年立绘 | child-char-sheet.png、teen-char-sheet.png、youth-char-sheet.png |
+
+《替换图片.docx》的新增映射：序章 `prologue` 1–3、4–7；一周目第一幕入场 `ch1_w1` 4–6、7–9、10–11，游戏后 `p1_03` 1–5、6–8、9–10；第二幕 `p1_04`、`p1_05_pre`、`p1_05_post`；第三幕游戏后 `p1_07`；第四幕入场 `p1_08` 至 `p1_11` 及游戏后 `p1_12_pre`、`p1_14`。二周目映射 `ch1_w2`、`p2_03`、`p2_04`、`p2_05_post`，青年段 `p2_08` 至 `p2_12`，老年段 `p2_15`、`p2_17`、`p2_18`。文档中同一图跨章节复用时继续共用 WebP 文件。
 
 部分文件用于多个位置。主界面继续使用已拼合且菜单对齐的房间插画；新增按钮与图标从原图通过 SVG 视口裁切，渲染滤镜去除白色背景。人物表通过 SVG 视口显示完整站立姿势，原文件未裁改。对话背景由 `src/systems/Illustrations.js` 按对白行、当前场景和回应分支选择，恢复存档时同步恢复相应画面。
 
