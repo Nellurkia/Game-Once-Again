@@ -29,7 +29,7 @@ export function buildStoryTree(scenes,story,playthrough){
  const groups=[],nodes=[];
  let previous=null;
  function group(id,title,subtitle){const result={id,title,subtitle,nodes:[],branches:[]};groups.push(result);return result;}
- function add(target,node,parents=previous?[previous]:[]){const result={...node,parents,playthrough};target.nodes.push(result);nodes.push(result);previous=result.id;return result;}
+ function add(target,node,parents=Array.isArray(previous)?previous:previous?[previous]:[]){const result={...node,parents,playthrough};target.nodes.push(result);nodes.push(result);previous=result.id;return result;}
  function dialogue(target,scene,key,title){
   (story[key]||[]).forEach((line,index)=>add(target,{id:`${scene}:dialogue:${key}:${index}`,scene,sceneProgress:{scene,kind:'dialogue',storyKey:key,index},title:`${title} · ${index+1}`,description:line.text.replace(/\{TBD\}\s*/g,''),kind:'dialogue'}));
  }
@@ -39,7 +39,16 @@ export function buildStoryTree(scenes,story,playthrough){
   const target=group(chapter.id,chapter.title,chapter.subtitle);
   dialogue(target,chapter.id,config.dialogueKey,'入场对白');
   add(target,{id:`${chapter.id}:game`,scene:chapter.id,sceneProgress:{scene:chapter.id,kind:'game'},title:chapter.subtitle,description:config.label,kind:'game'});
-  dialogue(target,chapter.id,'outro','章节尾声');
+  if(chapter.outroKeys&&playthrough===1)dialogue(target,chapter.id,chapter.outroKeys.MISSED,'原始存档 · 尾声');
+  else if(chapter.outroKeys){
+   const fork=previous,ends=[];
+   for(const [outcome,label] of [['SUCCESS_AT_STATION','走出门'],['FAILED_LATE','留下这次的结果']]){
+    const branch={id:outcome,label,nodes:[]};target.branches.push(branch);previous=fork;
+    dialogue(branch,chapter.id,chapter.outroKeys[outcome],label);
+    branch.nodes.forEach(node=>node.outcome=outcome);ends.push(previous);
+   }
+   previous=ends;
+  }else dialogue(target,chapter.id,'outro','章节尾声');
  }
  if(playthrough===1){
   add(group('interlude','幕间','再一次的机会'),{id:'interlude',scene:'interlude',sceneProgress:null,title:'再来一次',description:'走完四段人生，开启另一棵剧情树。',kind:'checkpoint'});
@@ -67,7 +76,7 @@ export function migrateStoryTrees(state,scenes,story){
  for(const playthrough of [1,2]){
   if(playthrough>state.playthrough)continue;
   const {nodes}=buildStoryTree(scenes,story,playthrough);
-  const main=nodes.filter(node=>!node.ending);
+  const main=nodes.filter(node=>!node.ending&&!node.outcome);
   let reached=-1;
   if(playthrough<state.playthrough)reached=main.length-1;
   else{

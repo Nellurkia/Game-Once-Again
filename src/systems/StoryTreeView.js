@@ -25,6 +25,7 @@ export function mountStoryTree(element,{manager,scenes,story,onSelect,onClose}){
   }
   for(const group of groups){
    const column=document.createElement('section');column.className=`story-tree-group ${group.branches.length?'with-branches':''}`;
+   column.dataset.branches=String(group.branches.length);
    const heading=document.createElement('h3');heading.textContent=group.title;
    const subtitle=document.createElement('p');subtitle.textContent=group.subtitle;
    const list=document.createElement('div');list.className='story-tree-node-list';
@@ -33,7 +34,7 @@ export function mountStoryTree(element,{manager,scenes,story,onSelect,onClose}){
     const branches=document.createElement('div');branches.className='story-tree-branches';
     for(const branch of group.branches){
      const branchList=document.createElement('div');branchList.className='story-tree-node-list';
-     const label=document.createElement('span');label.className='story-tree-branch-label';label.textContent=branch.id;branchList.append(label);
+     const label=document.createElement('span');label.className='story-tree-branch-label';label.textContent=branch.label||branch.id;branchList.append(label);
      branch.nodes.forEach(node=>appendNode(branchList,node));branches.append(branchList);
     }
     column.append(branches);

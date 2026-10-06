@@ -1,5 +1,6 @@
 import {defaults} from './GameSave.js';
 import {emptyStoryTrees,storyNodeId,storySnapshot,migrateStoryTrees,buildStoryTree} from './StoryTree.js';
+import {migrateChapterThree} from './ChapterContent.js';
 export class GameManager {
  constructor(save){this.save=save;this.state=save.load()||defaults();this.events=new Map();}
  on(event,cb){if(!this.events.has(event))this.events.set(event,new Set());this.events.get(event).add(cb);return ()=>this.events.get(event).delete(cb);}
@@ -9,7 +10,7 @@ export class GameManager {
  saveMinigameProgress(id,snapshot){this.state.minigameSaves??={};this.state.minigameSaves[`${id}:${this.state.playthrough}`]=snapshot;this.rememberStoryNode();return this.persist();}
  clearSavedGame(){const settings=this.state.settings;this.save.reset();this.state={...defaults(),settings};}
  startNewGame(){this.clearSavedGame();this.persist();}
- initializeStoryTrees(scenes,story){this.storyDefinitions={scenes,story};if(migrateStoryTrees(this.state,scenes,story)&&this.save.load())this.persist();}
+ initializeStoryTrees(scenes,story){this.storyDefinitions={scenes,story};const treeChanged=migrateStoryTrees(this.state,scenes,story),chapterChanged=migrateChapterThree(this.state,scenes);if((treeChanged||chapterChanged)&&this.save.load())this.persist();}
  rememberStoryNode(id=storyNodeId(this.state)){if(!id)return;this.state.storyTrees??=emptyStoryTrees();const tree=this.state.storyTrees[this.state.playthrough];tree.nodes[id]=storySnapshot(this.state);tree.lastNodeId=id;}
  restoreStoryNode(playthrough,id){
   if(![1,2].includes(playthrough)||!this.storyDefinitions)return false;
@@ -18,6 +19,7 @@ export class GameManager {
   if(!node||!snapshot||snapshot.playthrough!==playthrough||snapshot.scene!==node.scene)return false;
   if(id!=='ending:BE'&&storyNodeId(snapshot)!==id)return false;
   if(node.ending&&snapshot.flags.ending!==node.ending)return false;
+  if(node.outcome&&snapshot.flags.youthOutcome!==node.outcome)return false;
   Object.assign(this.state,JSON.parse(JSON.stringify(snapshot)));
   this.state.storyTrees[playthrough].lastNodeId=id;this.persist();return true;
  }

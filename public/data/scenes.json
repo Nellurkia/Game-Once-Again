@@ -47,17 +47,22 @@
  },
  {
   "id": "ch3",
-  "title": "第三幕 · 不要出声",
-  "subtitle": "躲起来，等它过去",
-  "age": "童年 · 争吵的夜晚",
-  "minigame": "quietNight",
+  "title": "第三幕 · 青年",
+  "subtitle": "出门之前",
+  "age": "青年 · 出发的那一天",
+  "minigame": "beforeDeparture",
   "week1": {
-   "dialogueKey": "ch3_w1",
-   "label": "藏进房间，让困意带走这一夜"
+   "dialogueKey": "ch3_departure_w1",
+   "label": "看清准备与等待的代价，重访错过 A 的那一天"
   },
   "week2": {
-   "dialogueKey": "ch3_w2",
-   "label": "暂停游戏，选择自己的回应"
+   "dialogueKey": "ch3_departure_w2",
+   "label": "19:00 前离开住所，19:30 前走到 A 的身边"
+  },
+  "outroKeys": {
+   "MISSED": "ch3_departure_missed",
+   "FAILED_LATE": "ch3_departure_late",
+   "SUCCESS_AT_STATION": "ch3_departure_success"
   }
  },
  {

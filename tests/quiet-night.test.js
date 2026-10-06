@@ -1,8 +1,0 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import {QuietNight} from '../src/minigames/quiet-night/model.js';
-const tick=(m,seconds,dx=0,dy=0)=>{for(let i=0;i<seconds*60;i++)m.step(1/60,dx,dy);};
-function enter(m){m.x=340;m.interact();tick(m,13);m.interact();m.x=775;m.interact();assert.equal(m.phase,'arcade');}
-test('first journey requires hiding before handheld; door rejects and sleep cannot be defeated',()=>{const m=new QuietNight();m.x=775;m.interact();assert.equal(m.phase,'room');m.x=100;m.interact();assert.equal(m.x,245);enter(m);tick(m,10);assert.equal(m.leave(),false);tick(m,40);assert.equal(m.response,'sleep');assert.equal(m.phase,'ending');assert.equal(m.choose('fear'),false);});
-test('every non-first journey can stop handheld and choose any response without resolving parents',()=>{for(const playthrough of [2,3])for(const response of ['hide','silent','fear']){const m=new QuietNight({playthrough});enter(m);assert.equal(m.leave(),false);tick(m,9);assert.equal(m.leave(),true);m.x=100;m.interact();assert.equal(m.phase,'response');assert.equal(m.choose(response),true);for(let i=0;i<6;i++)m.advance();assert.equal(m.phase,'done');assert.equal(m.response,response);}});
-test('shelter protects from sound waves and progress restores per variant and ending line',()=>{const m=new QuietNight({playthrough:2});m.x=340;m.interact();tick(m,14);assert.equal(m.exposure,0);m.interact();m.x=775;m.interact();tick(m,9);m.leave();m.x=100;m.interact();m.choose('fear');m.advance();const r=new QuietNight({playthrough:2,save:m.snapshot()});assert.equal(r.phase,'ending');assert.equal(r.line,1);assert.equal(new QuietNight({playthrough:1,save:m.snapshot()}).phase,'room');});

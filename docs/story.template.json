@@ -1,39 +1,100 @@
 {
   "prologue": [
-    { "speaker": "暮年的我", "text": "{TBD：旧房间与黄昏的开场对白}" },
-    { "speaker": "旧游戏机", "text": "{TBD：提出重新开始的对白}" }
+    {
+      "speaker": "暮年的我",
+      "text": "{TBD：旧房间与黄昏的开场对白}"
+    },
+    {
+      "speaker": "旧游戏机",
+      "text": "{TBD：提出重新开始的对白}"
+    }
   ],
   "ch1_w1": [
-    { "speaker": "童年的我", "text": "{TBD：一周目目标／逃避}" }
+    {
+      "speaker": "童年的我",
+      "text": "{TBD：一周目目标／逃避}"
+    }
   ],
   "ch1_w2": [
-    { "speaker": "童年的我", "text": "{TBD：二周目新目标／面对父母}" }
+    {
+      "speaker": "童年的我",
+      "text": "{TBD：二周目新目标／面对父母}"
+    }
   ],
   "ch2_w1": [
-    { "speaker": "少年的我", "text": "{TBD：一周目目标／错过节拍}" }
+    {
+      "speaker": "少年的我",
+      "text": "{TBD：一周目目标／错过节拍}"
+    }
   ],
   "ch2_w2": [
-    { "speaker": "少年的我", "text": "{TBD：二周目新目标／停下倾听}" }
+    {
+      "speaker": "少年的我",
+      "text": "{TBD：二周目新目标／停下倾听}"
+    }
   ],
-  "ch3_w1": [
-    { "speaker": "青年的我", "text": "{TBD：一周目目标／不断向前}" }
+  "ch3_departure_w1": [
+    {
+      "speaker": "青年的我",
+      "text": "{TBD：一周目青年入场；机会到来，却一再回答“再等等”}"
+    }
   ],
-  "ch3_w2": [
-    { "speaker": "青年的我", "text": "{TBD：二周目新目标／等等身边的人}" }
+  "ch3_departure_w2": [
+    {
+      "speaker": "青年的我",
+      "text": "{TBD：非一周目青年入场；同一间屋子，这次真正走出门}"
+    }
   ],
   "ch4_w1": [
-    { "speaker": "成年的我", "text": "{TBD：一周目目标／拼合生活}" }
+    {
+      "speaker": "成年的我",
+      "text": "{TBD：一周目目标／拼合生活}"
+    }
   ],
   "ch4_w2": [
-    { "speaker": "成年的我", "text": "{TBD：二周目新目标／接纳生活的空白}" }
+    {
+      "speaker": "成年的我",
+      "text": "{TBD：二周目新目标／接纳生活的空白}"
+    }
   ],
   "outro": [
-    { "speaker": "记忆", "text": "{TBD：每一幕结束后的通用收束对白}" }
+    {
+      "speaker": "记忆",
+      "text": "{TBD：每一幕结束后的通用收束对白}"
+    }
   ],
   "NE": [
-    { "speaker": "现在的我", "text": "{TBD：NE，选择留下并珍惜此刻}" }
+    {
+      "speaker": "现在的我",
+      "text": "{TBD：NE，选择留下并珍惜此刻}"
+    }
   ],
   "TE": [
-    { "speaker": "暮年的我", "text": "{TBD：TE，接纳原本的自己并与过去和解}" }
+    {
+      "speaker": "暮年的我",
+      "text": "{TBD：TE，接纳原本的自己并与过去和解}"
+    }
+  ],
+  "ch3_departure_missed": [
+    {
+      "speaker": "暮年的我",
+      "text": "{TBD：看清错过的原因，收束原始记忆}"
+    }
+  ],
+  "ch3_departure_late": [
+    {
+      "speaker": "暮年的我",
+      "text": "{TBD：玩家保留本次迟到结果，不羞辱或惩罚；承认已迈出的行动}"
+    }
+  ],
+  "ch3_departure_success": [
+    {
+      "speaker": "A",
+      "text": "你来了。"
+    },
+    {
+      "speaker": "暮年的我",
+      "text": "{TBD：青年人生偏移及其代价，接入第四幕}"
+    }
   ]
 }

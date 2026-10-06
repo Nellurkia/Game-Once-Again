@@ -38,7 +38,7 @@ function modal(content){document.getElementById('modal-content').innerHTML=conte
 function closeModal(){document.getElementById('modal').close();}
 document.getElementById('close-modal').onclick=closeModal;
 document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeModal();};
-function about(){modal(`<span class="eyebrow">ABOUT THE JOURNEY</span><h2>如果人生，可以再来一次。</h2><p>暮年的你在旧游戏机中，重新走进那些未曾忘记的记忆。第一次学会逃避，第二次试着面对。</p><p>这是《再来一次》的第一阶段框架预览。童年迷宫、少年夜庭生存战、第三幕《不要出声》和老年回忆拼图均可游玩。剧情以 {TBD} 标记，背景音乐已加入，章节独立配乐和音效待补充。</p><div class="modal-note">方向键 / WASD：移动<br>空格 / 点击：推进对话<br>所有进度只保存在当前浏览器。</div><p class="muted">主题：暮 · MoBiUs 2026 游戏开发挑战赛</p>`);}
+function about(){modal(`<span class="eyebrow">ABOUT THE JOURNEY</span><h2>如果人生，可以再来一次。</h2><p>暮年的你在旧游戏机中，重新走进那些未曾忘记的记忆。第一次学会逃避，第二次试着面对。</p><p>这是《再来一次》的第一阶段框架预览。童年迷宫、少年夜庭生存战、第三幕青年时期《出门之前》和老年回忆拼图均可游玩。剧情以 {TBD} 标记，背景音乐已加入，章节独立配乐和音效待补充。</p><div class="modal-note">方向键 / WASD：移动<br>空格 / 点击：推进对话<br>所有进度只保存在当前浏览器。</div><p class="muted">主题：暮 · MoBiUs 2026 游戏开发挑战赛</p>`);}
 document.getElementById('about').onclick=about;
 function settings(){modal(`<span class="eyebrow">PREFERENCES</span><h2>给旅程一点留白。</h2><p>背景音乐已开启，会循环播放。可拖动滑块调整音量，设为 0 即可静音。游戏音效将在后续加入。</p><label class="range-label">背景音乐 <input id="bgm" type="range" min="0" max="1" step=".05" value="${manager.state.settings.bgmVolume}"></label><label class="range-label">游戏音效 <input id="sfx" type="range" min="0" max="1" step=".05" value="${manager.state.settings.sfxVolume}"></label><button class="secondary full" id="erase">清除本地存档</button><p class="muted">清除后将从序章重新开始。</p>`);for(const [id,key] of [['bgm','bgmVolume'],['sfx','sfxVolume']])document.getElementById(id).oninput=e=>{manager.state.settings[key]=Number(e.target.value);if(key==='bgmVolume')audio.setBgmVolume(manager.state.settings[key]);if(save.load())manager.persist();};document.getElementById('erase').onclick=()=>{modal('<h2>清除这份存档？</h2><p>章节进度和已解锁结局将被移除。</p><button class="primary full" id="confirm-erase">确认清除</button>');document.getElementById('confirm-erase').onclick=()=>{manager.clearSavedGame();closeModal();render('title');};};}
 document.getElementById('settings').onclick=settings;
@@ -64,21 +64,21 @@ function chapter(id){
  manager.state.chapterIndex=Number(id.slice(2))-1;
  const config=c[manager.state.playthrough===1?'week1':'week2'];
  const progress=manager.getSceneProgress();
- const outro=()=>narrative(c.title+' · 尾声','outro',()=>{const next=manager.advanceChapter();navigate(next);});
+ const outro=()=>narrative(c.title+' · 尾声',c.outroKeys?.[manager.state.flags.youthOutcome]||'outro',()=>{const next=manager.advanceChapter();navigate(next);});
  const play=()=>{
   dialogue=null;
   manager.saveGameplayPosition();
-  screen.innerHTML=`<div class="play-scene ${c.minigame==='survivors'?'survivor-scene':['memoryPuzzle','shiguang','quietNight'].includes(c.minigame)?'memory-puzzle-scene':''}"><div class="play-header"><span>${c.title}</span><span>${manager.state.playthrough===2?'NEW GAME +':'FIRST JOURNEY'} <i> / </i> ${c.minigame==='pacman'?'记忆迷宫':c.minigame==='survivors'?'夜庭幸存者':'章节预览'}</span></div><div id="phaser-host"></div><div class="dpad"><button data-dir="0,-1" aria-label="向上">↑</button><button data-dir="-1,0" aria-label="向左">←</button><button data-dir="0,1" aria-label="向下">↓</button><button data-dir="1,0" aria-label="向右">→</button></div></div>`;
+  screen.innerHTML=`<div class="play-scene ${c.minigame==='survivors'?'survivor-scene':['memoryPuzzle','shiguang','beforeDeparture'].includes(c.minigame)?'memory-puzzle-scene':''}"><div class="play-header"><span>${c.title}</span><span>${manager.state.playthrough===2?'NEW GAME +':'FIRST JOURNEY'} <i> / </i> ${c.minigame==='pacman'?'记忆迷宫':c.minigame==='survivors'?'夜庭幸存者':'章节预览'}</span></div><div id="phaser-host"></div><div class="dpad"><button data-dir="0,-1" aria-label="向上">↑</button><button data-dir="-1,0" aria-label="向左">←</button><button data-dir="0,1" aria-label="向下">↓</button><button data-dir="1,0" aria-label="向右">→</button></div></div>`;
   const onComplete=result=>{
    Object.entries(result.flags||{}).forEach(([k,v])=>manager.setFlag(k,v));
    setTimeout(()=>{if(!document.getElementById('phaser-host'))return;game?.destroy(true);game=null;outro();},100);
   };
   const playthrough=manager.state.playthrough;
-  game=mountGame('phaser-host',{config,minigame:c.minigame,asset:data.manifest.find(a=>a.id===c.asset),onComplete,bridge,context:{playthrough},save:manager.getMinigameSave(c.minigame),onProgress:snapshot=>manager.state.scene===id&&manager.state.playthrough===playthrough?manager.saveMinigameProgress(c.minigame,snapshot):false});
+  game=mountGame('phaser-host',{config,minigame:c.minigame,asset:data.manifest.find(a=>a.id===c.asset),onComplete,bridge,context:{playthrough,sfxVolume:manager.state.settings.sfxVolume},save:manager.getMinigameSave(c.minigame),onProgress:snapshot=>manager.state.scene===id&&manager.state.playthrough===playthrough?manager.saveMinigameProgress(c.minigame,snapshot):false});
   document.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>bridge.move?.(...b.dataset.dir.split(',').map(Number)));
  };
  if(progress?.kind==='game')play();
- else if(progress?.kind==='dialogue'&&progress.storyKey==='outro')outro();
+ else if(progress?.kind==='dialogue'&&(progress.storyKey==='outro'||Object.values(c.outroKeys||{}).includes(progress.storyKey)))outro();
  else narrative(c.title,config.dialogueKey,play);
 }
 function interlude(){screen.innerHTML=`<div class="center-scene illustrated-center" style="--scene-art:url('${illustration("E2-new-game-plus.png")}')"><div class="orbit">∞</div><span class="eyebrow">FIRST JOURNEY COMPLETE</span><h2>那些遗憾，<br>还有另一个答案。</h2><p>你已经走过四段人生。<br>再走一次相同的路，这一次，试着做出不同的选择。</p><button class="primary" id="ng">再来一次 <span>NEW GAME + →</span></button><span class="small-note">二周目已解锁 · 相同的记忆，不同的目标</span></div>`;document.getElementById('ng').onclick=()=>{manager.secondRun();navigate('ch1');};}
