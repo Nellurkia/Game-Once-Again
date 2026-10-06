@@ -5,13 +5,14 @@ const drawings={
  shield:'<path d="m12 2 8 3v6c0 5-5 9-8 11-3-2-8-6-8-11V5l8-3Z"/><path d="m8 12 3 3 5-6"/>',
  hole:'<ellipse cx="12" cy="18" rx="9" ry="4"/><path d="M12 2v14m-4-4 4 4 4-4"/>',
  lights:'<path d="M4 17V7m8 10V3m8 14V9M1 21h22"/><circle cx="4" cy="7" r="2"/><circle cx="12" cy="3" r="2"/><circle cx="20" cy="9" r="2"/>',
+ lock:'<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/><path d="M12 14v3"/>',
 };
 const badge=icon=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${drawings[icon]}</svg>`;
 export function achievementHomeMarkup(store){
- return `<div class="title-achievements" aria-label="旅途成就"><button class="achievement-heading" data-achievements data-sfx="select">旅途成就 <span>${store.count} / ${ACHIEVEMENTS.length} · 查看</span></button><div class="achievement-home-list">${ACHIEVEMENTS.map(item=>`<button class="achievement-mini ${store.isUnlocked(item.id)?'unlocked':'locked'}" data-achievements data-sfx="select" aria-label="${item.name}，${store.isUnlocked(item.id)?'已解锁':'未解锁'}">${badge(item.icon)}<span>${item.name}</span></button>`).join('')}</div></div>`;
+ return `<div class="title-achievements"><button class="achievement-heading" data-achievements data-sfx="select" aria-label="打开成就，${store.count} / ${ACHIEVEMENTS.length} 已解锁">${badge('lights')}<span class="achievement-label">成就</span><span class="achievement-count">${store.count} / ${ACHIEVEMENTS.length}</span></button></div>`;
 }
 export function achievementDialogMarkup(store){
- return `<div class="achievement-dialog"><span class="eyebrow">MOMENTS TO KEEP</span><h2>旅途成就 <small>${store.count} / ${ACHIEVEMENTS.length}</small></h2><p>成就会留在这个浏览器中，跨周目与新的旅程保留。</p><div class="achievement-list">${ACHIEVEMENTS.map(item=>`<article class="achievement-card ${store.isUnlocked(item.id)?'unlocked':'locked'}">${badge(item.icon)}<div><small>${item.game} · ${store.isUnlocked(item.id)?'已解锁':'未解锁'}</small><h3>${item.name}</h3><p>${item.description}</p></div></article>`).join('')}</div></div>`;
+ return `<div class="achievement-dialog"><span class="eyebrow">MOMENTS TO KEEP</span><h2>旅途成就 <small>${store.count} / ${ACHIEVEMENTS.length}</small></h2><div class="achievement-list">${ACHIEVEMENTS.map(item=>{const unlocked=store.isUnlocked(item.id);return `<article class="achievement-card ${unlocked?'unlocked':'locked'}"${unlocked?'':` aria-label="尚未解锁的成就"`}>${badge(unlocked?item.icon:'lock')}<div>${unlocked?`<small>${item.game} · 已解锁</small><h3>${item.name}</h3><p>${item.description}</p>`:`<small>未解锁</small><h3>???</h3><p>继续旅程，发现新的回忆。</p>`}</div></article>`;}).join('')}</div></div>`;
 }
 const queue=[];let showing=false;
 export function notifyAchievement(item){queue.push(item);if(!showing)showNext();}
