@@ -1,6 +1,8 @@
 import {QuietNight,SPOTS,RESPONSES} from './model.js';
+import {illustration} from '../../systems/Illustrations.js';
 export function mountQuietNight(parent,chapter={}){
  const model=new QuietNight({playthrough:chapter.context?.playthrough,save:chapter.save,onProgress:chapter.onProgress});
+ const photos={};for(const name of ['C7-morning-asleep.png','C5-blanket-console.png','NG1-mother-enters.png','NG2-say-afraid.png']){const img=new Image();img.src=illustration(name);photos[name]=img;}
  const canvas=document.createElement('canvas');canvas.width=1280;canvas.height=720;canvas.tabIndex=0;canvas.setAttribute('aria-label','不要出声：方向键移动，E 躲藏或打开游戏机，P 暂停。');canvas.style.cssText='width:100%;height:100%;display:block;touch-action:none;outline:none';parent.append(canvas);
  const c=canvas.getContext('2d'),keys=new Set();let intro=true,paused=false,destroyed=false,notified=false,last=0,buttons=[],pointer=null,hostPaused=false;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -14,7 +16,9 @@ export function mountQuietNight(parent,chapter={}){
   const arcade=model.phase==='arcade';
   text('不要出声',40,39,27,'#efe0c6');text(model.revisit?'重访童年 · 可以改变自己的回应':'童年的夜晚 · 躲起来，等它过去',210,40,16,'#a3aab7');button(902,18,96,paused?'继续 P':'暂停 P',()=>{paused=!paused;clear();model.commit();});
   c.save();c.beginPath();c.rect(28,88,1224,536);c.clip();
-  if(arcade){
+  const ending=['ending','done'].includes(model.phase),photo=photos[model.response==='fear'?'NG2-say-afraid.png':model.response==='silent'?'NG1-mother-enters.png':model.response==='hide'?'C5-blanket-console.png':'C7-morning-asleep.png'];
+  if(ending&&photo.complete&&photo.naturalWidth){c.drawImage(photo,0,0,1280,720);}
+  else if(arcade){
    rect(28,88,1224,536,'#101d2b');for(let i=0;i<75;i++)rect(60+(i*167)%1160,110+(i*67+time*.012)%500,2,2,'#52667c');
    c.save();if(!reduced&&model.gameTime>28)c.filter=`blur(${(model.gameTime-28)/11}px)`;
    for(const b of model.bullets){rect(b.x-58,b.y-16,116,32,'#623d5470',3);text(b.text,b.x,b.y,21,'#d99cac','center');}
@@ -40,6 +44,7 @@ export function mountQuietNight(parent,chapter={}){
   text(hint,40,654,17,'#d0c7ca');text(arcade?'方向键 / WASD / 按住画面移动 · P 暂停':'A/D 或方向键移动 · E 躲藏 / 互动 · P 暂停',40,693,14,'#8e97a9');
   if(!arcade){button(840,674,85,'←',()=>{model.step(.05,-1);});button(940,674,85,'→',()=>{model.step(.05,1);});button(1040,674,195,'互动 E',()=>model.interact());}
   if(!model.saved)text('暂未写入浏览器，进度仅保留在本次页面',1240,74,12,'#dbb68e','right');
+  if(ending&&!intro&&!paused){rect(70,414,1140,202,'#182333ef',16);const r=RESPONSES[model.response];text(r.title,640,448,24,'#eddbc2','center');text(model.phase==='done'?'这一段记忆，先留在这里。':r.lines[model.line],640,501,19,'#d9d4d3','center');button(485,553,310,model.phase==='done'?'继续故事 / Enter':'继续 / Enter',proceed);return;}
   if(intro||paused||['response','ending','done'].includes(model.phase)){
    buttons=[];rect(28,88,1224,536,'#0b101cd9',12);rect(225,153,830,430,'#293345',20);
    if(intro){text('今晚，先照顾好自己。',640,215,30,'#eddbc2','center');['靠近被窝、床底或衣柜，按 E 躲藏，再按 E 出来。','藏满 3 秒，并在房间待过 12 秒后，可以到书桌打开游戏机。','在掌机里移动，躲开词句，直到困倦入睡。',model.revisit?'这一次，掌机中会出现“暂停”。你可以回来选择自己的回应。':'这一夜，孩子无法让争吵停止，也没有真正说出口。'].forEach((s,i)=>text(s,640,292+i*40,17,'#c9cbd4','center'));button(485,500,310,'走进房间 / Enter',()=>{intro=false;clear();canvas.focus();});}

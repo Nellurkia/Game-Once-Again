@@ -48,5 +48,19 @@ h1{font-size:84px}
 @keyframes dust-drift{to{background-position:100px -120px,13px -115px}}
 .staff-list{display:grid;grid-template-columns:1fr 1fr;gap:12px 25px;padding:18px 0;color:#c9beca;font-size:13px}
 .staff-list b{font-weight:400;color:#e2cda6;text-align:right}
+.narrative-scene{isolation:isolate;background:#172132}
+.narrative-scene .narrative-room{position:absolute;inset:0;width:100%;height:100%;opacity:1;mask-image:none;z-index:-2}
+.narrative-illustration{width:100%;height:100%;object-fit:cover}
+.narrative-scene:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#09122185,transparent 45%,#081222a3);pointer-events:none;z-index:-1}
+.scene-heading{text-shadow:0 2px 8px #07101d}
+.dialogue-box{background:#142032ed;backdrop-filter:blur(6px)}
+.illustrated-center{isolation:isolate;position:relative;background:#1c2431}
+.illustrated-center:before{content:'';position:absolute;inset:0;background:linear-gradient(#0d18218c,#0d1821cf),var(--scene-art) center/cover;z-index:-1}
+.table-menu{height:76px;bottom:19px}
+.table-action{position:relative;isolation:isolate;background:transparent!important;border:0;box-shadow:none!important;gap:7px;color:#52381f}
+.table-action>.menu-kit-button{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.table-action>.menu-kit-icon{width:30px;height:30px;flex:none;mix-blend-mode:multiply}
+.table-action>span{font-size:14px;letter-spacing:1px}
+.narrative-portrait{position:absolute;left:76px;bottom:224px;width:85px;height:168px;background:#fffdf7;border:5px solid #f2e5cc;border-radius:8px;box-shadow:0 3px 18px #09122166}
 @media(prefers-reduced-motion:reduce){.room-dust{animation:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
