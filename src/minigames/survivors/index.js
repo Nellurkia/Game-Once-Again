@@ -1,8 +1,9 @@
 import {register} from '../index.js';
 import {SurvivorRun,ARENA,SHELTERS,WALLS,ITEMS} from './model.js';
 
-register('survivors',{create(scene,config,onComplete,{onAchievement}={}){
- let run=new SurvivorRun(),overlay=null,lastMode='',destroyed=false,finished=false,hideToggle=false,pointerTarget=null,nudge=null;
+register('survivors',{create(scene,config,onComplete,{onAchievement,context}={}){
+ const playthrough=context?.playthrough===2?2:1;
+ let run=new SurvivorRun({playthrough}),overlay=null,lastMode='',destroyed=false,finished=false,hideToggle=false,pointerTarget=null,nudge=null;
  const touch=matchMedia('(pointer: coarse)').matches;
  const keys=new Set();
  const colors={floor:0x14272d,edge:0x38504e,gold:0xf4d69a,mint:0x9ed9bb,pink:0xe990a0};
@@ -40,8 +41,9 @@ register('survivors',{create(scene,config,onComplete,{onAchievement}={}){
  }
  function begin(){if(run.mode==='ready'){window.playGameSfx?.('select');keys.clear();run.start();}}
  function pick(index){if(run.mode==='choice'&&run.offers[index]){window.playGameSfx?.('confirm');run.choose(run.offers[index].id);keys.clear();hideToggle=false;}}
- function retry(){window.playGameSfx?.('select');run=new SurvivorRun();run.start();keys.clear();hideToggle=false;pointerTarget=null;nudge=null;}
+ function retry(){window.playGameSfx?.('select');run=new SurvivorRun({playthrough});run.start();keys.clear();hideToggle=false;pointerTarget=null;nudge=null;}
  function complete(){if(finished||run.mode!=='won')return;finished=true;onComplete({success:true,score:run.kills,flags:{nightGardenCleared:true,nightGardenItems:[...run.items]}});}
+ function continueAfterFailure(){if(finished||run.mode!=='lost'||playthrough!==1)return;finished=true;onComplete({success:false,score:run.kills,flags:{nightGardenFailed:true,nightGardenItems:[...run.items]}});}
  function showOverlay(){
   overlay?.destroy(true);overlay=null;
   if(['wave','boss'].includes(run.mode))return;
@@ -56,18 +58,19 @@ register('survivors',{create(scene,config,onComplete,{onAchievement}={}){
     card.on('pointerover',()=>card.setFillStyle(0x315347));card.on('pointerout',()=>card.setFillStyle(0x203b3b));card.on('pointerdown',()=>pick(i));
     overlay.add(card);overlay.add(text(x,305,`${i+1}  /  ${item.tag}`,14,'#a2c9b0').setOrigin(.5));
     overlay.add(text(x,354,item.name,26,'#f5dca7').setOrigin(.5));
-    overlay.add(text(x,421,item.description,16,'#c9d7c7').setOrigin(.5).setAlign('center'));
+    overlay.add(text(x,421,typeof item.description==='string'?item.description:item.description[playthrough],16,'#c9d7c7').setOrigin(.5).setAlign('center'));
     overlay.add(text(x,499,touch?'点按选择':'点击选择 · '+(i+1),14,'#ecd0a2').setOrigin(.5));
    });
   }else if(run.mode==='ready'){
    overlay.add(text(640,252,'夜庭',42,'#f5dfa9').setOrigin(.5));
    overlay.add(text(640,314,'生存三波，选择道具，击败 Boss。',20,'#a7d3b6').setOrigin(.5));
-   overlay.add(text(640,370,touch?'拖动移动 · 自动攻击 · 躲藏恢复生命':'移动自动攻击 · 草丛躲藏恢复生命',16,'#c2cfc9').setOrigin(.5));
+   overlay.add(text(640,370,playthrough===1?'近身自动攻击 · 草丛躲藏恢复生命':touch?'拖动移动 · 远程自动攻击 · 躲藏恢复生命':'远程自动攻击 · 草丛躲藏恢复生命',16,'#c2cfc9').setOrigin(.5));
    cardButton(overlay,640,465,270,62,touch?'开始':'开始 · 空格',begin);
   }else if(run.mode==='lost'){
    onAchievement?.('night-fear');
    overlay.add(text(640,280,'微光熄灭',38,'#edc8bd').setOrigin(.5));
-   cardButton(overlay,640,370,260,58,touch?'再试一次':'再试一次 · R',retry);
+   if(playthrough===1){cardButton(overlay,465,370,250,58,touch?'再试一次':'再试一次 · R',retry);cardButton(overlay,815,370,250,58,touch?'继续剧情':'继续剧情 · C',continueAfterFailure);}
+   else cardButton(overlay,640,370,260,58,touch?'再试一次':'再试一次 · R',retry);
   }else{
    if(run.mode==='won'&&run.damageTaken===0)onAchievement?.('night-flawless');
    overlay.add(text(640,280,'夜色散去',38,'#f5dfa9').setOrigin(.5));
@@ -82,6 +85,7 @@ register('survivors',{create(scene,config,onComplete,{onAchievement}={}){
   if(controls.includes(key)){event.preventDefault();keys.add(key);}
   if(event.repeat)return;
   if(key==='r'&&run.mode==='lost'){event.preventDefault();retry();}
+  if(key==='c'&&run.mode==='lost'&&playthrough===1){event.preventDefault();continueAfterFailure();}
   if(['1','2','3'].includes(key)&&run.mode==='choice'){event.preventDefault();pick(Number(key)-1);}
  }
  const up=event=>keys.delete(event.key.length===1?event.key.toLowerCase():event.key);
@@ -115,7 +119,7 @@ register('survivors',{create(scene,config,onComplete,{onAchievement}={}){
   for(const s of run.hazards){art.fillStyle(0xdf839d);art.fillCircle(s.x,s.y,s.r);}
   const alpha=p.hidden?.4:p.invulnerable>0&&Math.sin(time*.04)>0?.45:1;
   art.fillStyle(0x8ddeb1,.1);art.fillCircle(p.x,p.y,28);art.fillStyle(0x8dbea6,alpha);art.fillTriangle(p.x-14,p.y+17,p.x,p.y-9,p.x+14,p.y+17);art.fillStyle(0xf4e2b5,alpha);art.fillCircle(p.x,p.y-3,10);art.lineStyle(2,p.hidden?0x8be0b1:0xf8dfad,alpha);art.strokeCircle(p.x,p.y,17);
-  for(const e of run.effects){art.lineStyle(2,e.color==='hurt'?0xe6939c:0xf6db9d,Math.min(1,e.life*4));art.strokeCircle(e.x,e.y,e.r+(1-e.life)*8);}
+  for(const e of run.effects){art.lineStyle(2,e.color==='hurt'?0xe6939c:e.color==='attack'?0xffd47f:0xf6db9d,Math.min(1,e.life*4));art.strokeCircle(e.x,e.y,e.r+(1-e.life)*8);}
   health.setText(`生命  ${Math.ceil(p.hp)} / ${p.maxHp}`);breath.setText(`屏息  ${p.breath.toFixed(1)} 秒`);score.setText(`击退  ${run.kills}`);
   heading.setText(run.mode==='boss'?'Boss':'夜庭');
   stage.setText(run.mode==='boss'?'最终战':'第 '+run.wave+' / 3 波 · '+Math.max(0,Math.ceil(run.roundDuration-run.time))+' 秒');

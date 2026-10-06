@@ -2,15 +2,15 @@ export const ARENA={left:48,right:1232,top:156,bottom:590};
 export const SHELTERS=[{x:285,y:270,r:61},{x:985,y:278,r:61},{x:310,y:493,r:58},{x:954,y:486,r:58}];
 export const WALLS=[{x:472,y:284,w:94,h:48},{x:714,y:441,w:94,h:48}];
 export const ITEMS=[
- {id:'ember',name:'余烬灯芯',tag:'伤害',description:'每发伤害 +65%\n让微光也能击退阴影。'},
- {id:'clock',name:'旧怀表',tag:'射速',description:'攻击间隔缩短 30%\n给每一次心跳多一点勇气。'},
- {id:'echo',name:'回声铃',tag:'多重攻击',description:'每次额外发射一枚光弹\n同时追击附近的多个敌人。'},
+ {id:'ember',name:'余烬灯芯',tag:'伤害',description:{1:'近身攻击伤害 +65%\n让微光也能击退阴影。',2:'光弹伤害 +65%\n让微光也能击退阴影。'}},
+ {id:'clock',name:'旧怀表',tag:'攻速',description:{1:'近身攻击间隔缩短 30%\n抓住阴影靠近的瞬间。',2:'光弹攻击间隔缩短 30%\n给每一次心跳多一点勇气。'}},
+ {id:'echo',name:'回声铃',tag:'强化攻击',description:{1:'近身挥击范围扩大\n一次扫开更多阴影。',2:'每次额外发射一枚光弹\n同时追击附近的多个敌人。'}},
  {id:'orbit',name:'纸星环',tag:'近身防护',description:'星环每 0.6 秒灼伤近敌\n靠得太近的阴影会受伤。'},
  {id:'boots',name:'轻风鞋',tag:'机动',description:'移动速度 +30%\n更快穿过怪潮与危险区域。'},
  {id:'cloak',name:'苔色披风',tag:'躲藏',description:'屏息时长 +3 秒，藏身回血翻倍\n用片刻安静换一次反击。'},
  {id:'heart',name:'热可可',tag:'生命',description:'生命上限 +40，并恢复 50 点\n还有温暖值得守住。'},
  {id:'shield',name:'旧胸针',tag:'减伤',description:'每次受到的伤害减少 5 点\n至少承受 1 点伤害。'},
- {id:'needle',name:'银色书签',tag:'穿透',description:'光弹可额外穿透两名敌人\n穿过拥挤的回忆。'}
+ {id:'needle',name:'银色书签',tag:'攻击范围',description:{1:'近身攻击范围扩大\n穿过拥挤的回忆。',2:'光弹可额外穿透两名敌人\n穿过拥挤的回忆。'}}
 ];
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
@@ -23,10 +23,11 @@ function move(body,dx,dy){
 }
 
 export class SurvivorRun {
- constructor({random=Math.random,roundDuration=22}={}){
-  this.random=random;this.roundDuration=roundDuration;this.mode='ready';this.wave=1;this.time=0;this.kills=0;
+ constructor({random=Math.random,roundDuration=22,playthrough=1}={}){
+  this.random=random;this.roundDuration=roundDuration;this.playthrough=playthrough===2?2:1;this.mode='ready';this.wave=1;this.time=0;this.kills=0;
   this.items=[];this.offers=[];this.enemies=[];this.shots=[];this.hazards=[];this.drops=[];this.effects=[];this.damageTaken=0;
-  this.player={x:640,y:420,r:13,hp:100,maxHp:100,speed:215,damage:18,interval:.43,projectiles:1,pierce:0,armor:0,breath:4,maxBreath:4,healing:4,hidden:false,exhausted:false,invulnerable:0};
+  const melee=this.playthrough===1;
+  this.player={x:640,y:420,r:13,hp:100,maxHp:100,speed:215,damage:melee?24:18,interval:melee?.48:.43,meleeRange:melee?82:0,projectiles:melee?0:1,pierce:0,armor:0,breath:4,maxBreath:4,healing:4,hidden:false,exhausted:false,invulnerable:0};
   this.fireTimer=0;this.spawnTimer=.3;this.orbitTimer=0;this.nextId=1;this.boss=null;
  }
  start(){if(this.mode==='ready')this.mode='wave';}
@@ -40,13 +41,13 @@ export class SurvivorRun {
   this.items.push(id);const p=this.player;
   if(id==='ember')p.damage*=1.65;
   if(id==='clock')p.interval*=.7;
-  if(id==='echo')p.projectiles++;
+  if(id==='echo'){if(this.playthrough===1)p.meleeRange+=38;else p.projectiles++;}
   if(id==='orbit')this.orbit=true;
   if(id==='boots')p.speed*=1.3;
   if(id==='cloak'){p.maxBreath+=3;p.healing*=2;}
   if(id==='heart'){p.maxHp+=40;p.hp+=50;}
   if(id==='shield')p.armor+=5;
-  if(id==='needle')p.pierce+=2;
+  if(id==='needle'){if(this.playthrough===1)p.meleeRange+=26;else p.pierce+=2;}
   p.hp=Math.min(p.maxHp,p.hp+12);p.breath=p.maxBreath;p.exhausted=false;
   this.offers=[];this.time=0;this.spawnTimer=1;this.fireTimer=0;
   if(this.items.length===3){
@@ -99,8 +100,13 @@ export class SurvivorRun {
   if(this.boss)this.updateBoss(dt);
   this.fireTimer-=dt;
   if(!p.hidden&&this.fireTimer<=0){
-   const targets=[...this.enemies,...(this.boss?[this.boss]:[])].filter(e=>e.hp>0&&distance(p,e)<490).sort((a,b)=>distance(p,a)-distance(p,b));
-   if(targets.length){for(let i=0;i<p.projectiles;i++)this.projectile(p,targets[i%targets.length],440);this.fireTimer=p.interval;}
+   const range=this.playthrough===1?p.meleeRange:490;
+   const targets=[...this.enemies,...(this.boss?[this.boss]:[])].filter(e=>e.hp>0&&distance(p,e)<range+e.r).sort((a,b)=>distance(p,a)-distance(p,b));
+   if(targets.length){
+    if(this.playthrough===1){for(const target of targets){target.hp-=p.damage;this.effects.push({x:target.x,y:target.y,r:10,life:.18,color:'hit'});}this.effects.push({x:p.x,y:p.y,r:p.meleeRange,life:.2,color:'attack'});}
+    else for(let i=0;i<p.projectiles;i++)this.projectile(p,targets[i%targets.length],440);
+    this.fireTimer=p.interval;
+   }
   }
   if(this.orbit&&!p.hidden){this.orbitTimer-=dt;if(this.orbitTimer<=0){for(const target of [...this.enemies,...(this.boss?[this.boss]:[])])if(distance(p,target)<88+target.r)target.hp-=16;this.orbitTimer=.6;}}
   for(const shot of this.shots){
