@@ -83,7 +83,7 @@ function chapter(id){
  const playGame=()=>{
   dialogue=null;
   manager.saveGameplayPosition();
-  screen.innerHTML=`<div class="play-scene ${c.minigame==='survivors'?'survivor-scene':['memoryPuzzle','shiguang','beforeDeparture','numberHero'].includes(c.minigame)?'memory-puzzle-scene':''}"><div class="play-header"><span>${c.title}</span><span>${manager.state.playthrough===2?'NEW GAME +':'FIRST JOURNEY'} <i> / </i> ${c.minigame==='pacman'?'记忆迷宫':c.minigame==='survivors'?'夜庭幸存者':'章节预览'}</span></div><div id="phaser-host"></div><div class="dpad"><button data-dir="0,-1" aria-label="向上">↑</button><button data-dir="-1,0" aria-label="向左">←</button><button data-dir="0,1" aria-label="向下">↓</button><button data-dir="1,0" aria-label="向右">→</button></div></div>`;
+  screen.innerHTML=`<div class="play-scene ${c.minigame==='survivors'?'survivor-scene':['memoryPuzzle','shiguang','beforeDeparture','numberHero'].includes(c.minigame)?'memory-puzzle-scene':''}"><div class="play-header"><span>${c.title}</span><span>${manager.state.playthrough===2?'NEW GAME +':'FIRST JOURNEY'} <i> / </i> ${c.minigame==='numberHero'?'数字勇者':c.minigame==='survivors'?'夜庭幸存者':'章节预览'}</span></div><div id="phaser-host"></div><div class="dpad"><button data-dir="0,-1" aria-label="向上">↑</button><button data-dir="-1,0" aria-label="向左">←</button><button data-dir="0,1" aria-label="向下">↓</button><button data-dir="1,0" aria-label="向右">→</button></div></div>`;
   const afterGame=()=>{
   const outcome=manager.state.flags.youthOutcome;
   const keys=c.postGameKeysByOutcome?.[outcome]||config.postGameKeys||[];
